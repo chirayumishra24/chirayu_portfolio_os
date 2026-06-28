@@ -9,9 +9,27 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        sys: {
+          accent: "var(--accent)",
+          "accent-hover": "var(--accent-hover)",
+          "accent-muted": "var(--accent-muted)",
+          "text-primary": "var(--text-primary)",
+          "text-secondary": "var(--text-secondary)",
+          window: "var(--bg-window)",
+          border: "var(--border-window)",
+          "border-active": "var(--border-active)",
+          taskbar: "var(--taskbar-bg)",
+          terminal: "var(--terminal-bg)",
+          "terminal-fg": "var(--terminal-fg)",
+        }
       },
+      fontFamily: {
+        sans: ["var(--font-sans)", "system-ui", "sans-serif"],
+        mono: ["var(--font-mono)", "monospace"],
+      },
+      animation: {
+        "pulse-fast": "pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+      }
     },
   },
   plugins: [],

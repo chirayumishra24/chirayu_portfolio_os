@@ -1,0 +1,31 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model ContactMessage {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  subject   String
+  message   String
+  createdAt DateTime @default(now())
+}
+
+model Guestbook {
+  id        String   @id @default(uuid())
+  name      String
+  message   String
+  createdAt DateTime @default(now())
+}
+
+model UserAchievement {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  unlockedAt DateTime @default(now())
+}
