@@ -112,15 +112,18 @@ export default function TerminalApp() {
 
       case "theme":
         if (!commandArg) {
-          newLogs.push({ type: "error", text: "Usage: theme [tokyonight | onedark | dracula | nord | githublight | catppuccin | cyberpunk | matrix]" });
+          newLogs.push({ type: "error", text: "Usage: theme [tokyonight | onedark | dracula | nord | githublight | catppuccin | cyberpunk | matrix | kratos | spiderverse | heisenberg | hazmat | tonystark | thor | johnwick]" });
         } else {
-          const themes: ThemeName[] = ["tokyonight", "onedark", "dracula", "nord", "githublight", "catppuccin", "cyberpunk", "matrix", "minimalwhite", "midnightblue"];
+          const themes: ThemeName[] = [
+            "tokyonight", "onedark", "dracula", "nord", "githublight", "catppuccin", "cyberpunk", "matrix", "minimalwhite", "midnightblue",
+            "kratos", "spiderverse", "heisenberg", "hazmat", "tonystark", "thor", "johnwick"
+          ];
           if (themes.includes(commandArg as ThemeName)) {
             setTheme(commandArg as ThemeName);
             playSound("theme");
             newLogs.push({ type: "success", text: `Theme successfully switched to: ${commandArg}` });
           } else {
-            newLogs.push({ type: "error", text: `Theme '${commandArg}' not recognized. Try 'theme dracula'` });
+            newLogs.push({ type: "error", text: `Theme '${commandArg}' not recognized. Try 'theme kratos'` });
           }
         }
         break;

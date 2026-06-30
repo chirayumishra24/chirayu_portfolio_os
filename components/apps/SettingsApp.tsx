@@ -33,6 +33,13 @@ export default function SettingsApp() {
     { name: "matrix", label: "Matrix", preview: "bg-green-900" },
     { name: "minimalwhite", label: "Minimal White", preview: "bg-white border border-zinc-300" },
     { name: "midnightblue", label: "Midnight Blue", preview: "bg-blue-950" },
+    { name: "kratos", label: "Kratos", preview: "bg-red-800" },
+    { name: "spiderverse", label: "Spiderverse", preview: "bg-rose-600" },
+    { name: "heisenberg", label: "Heisenberg", preview: "bg-amber-600" },
+    { name: "hazmat", label: "Hazmat Suit", preview: "bg-lime-500" },
+    { name: "tonystark", label: "Tony Stark", preview: "bg-red-500" },
+    { name: "thor", label: "Thor", preview: "bg-cyan-500" },
+    { name: "johnwick", label: "John Wick", preview: "bg-yellow-400" },
   ];
 
   const tabs: { id: SettingsTab; label: string; icon: React.ReactNode }[] = [

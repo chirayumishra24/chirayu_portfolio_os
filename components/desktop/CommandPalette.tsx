@@ -124,6 +124,13 @@ export default function CommandPalette() {
     { id: "theme-matrix", category: "Themes", label: "Switch Theme: Matrix Terminal Mode", action: () => handleSetTheme("matrix") },
     { id: "theme-minimalwhite", category: "Themes", label: "Switch Theme: Minimal White", action: () => handleSetTheme("minimalwhite") },
     { id: "theme-midnightblue", category: "Themes", label: "Switch Theme: Midnight Blue", action: () => handleSetTheme("midnightblue") },
+    { id: "theme-kratos", category: "Themes", label: "Switch Theme: Kratos (God of War)", action: () => handleSetTheme("kratos") },
+    { id: "theme-spiderverse", category: "Themes", label: "Switch Theme: Spiderverse", action: () => handleSetTheme("spiderverse") },
+    { id: "theme-heisenberg", category: "Themes", label: "Switch Theme: Heisenberg", action: () => handleSetTheme("heisenberg") },
+    { id: "theme-hazmat", category: "Themes", label: "Switch Theme: Hazmat Suit", action: () => handleSetTheme("hazmat") },
+    { id: "theme-tonystark", category: "Themes", label: "Switch Theme: Tony Stark (Iron Man)", action: () => handleSetTheme("tonystark") },
+    { id: "theme-thor", category: "Themes", label: "Switch Theme: Thor (Asgard Lightning)", action: () => handleSetTheme("thor") },
+    { id: "theme-johnwick", category: "Themes", label: "Switch Theme: John Wick", action: () => handleSetTheme("johnwick") },
 
     { id: "egg-hire", category: "Easter Eggs", label: "Trigger: sudo hire chirayu", action: handleHireEgg },
     { id: "egg-matrix", category: "Easter Eggs", label: "Trigger: matrix falling rain", action: handleMatrixEgg },

@@ -127,10 +127,28 @@ export default function ContextMenu() {
         Cyberpunk
       </button>
       <button
-        onClick={() => handleChangeTheme("matrix")}
-        className="w-full text-left px-3.5 py-1.5 hover:bg-zinc-900 pl-6 transition-colors"
+        onClick={() => handleChangeTheme("kratos")}
+        className="w-full text-left px-3.5 py-1.5 hover:bg-zinc-900 pl-6 transition-colors font-semibold text-red-400"
       >
-        Matrix Mode
+        Kratos
+      </button>
+      <button
+        onClick={() => handleChangeTheme("spiderverse")}
+        className="w-full text-left px-3.5 py-1.5 hover:bg-zinc-900 pl-6 transition-colors font-semibold text-rose-400"
+      >
+        Spiderverse
+      </button>
+      <button
+        onClick={() => handleChangeTheme("heisenberg")}
+        className="w-full text-left px-3.5 py-1.5 hover:bg-zinc-900 pl-6 transition-colors font-semibold text-amber-400"
+      >
+        Heisenberg
+      </button>
+      <button
+        onClick={() => handleChangeTheme("johnwick")}
+        className="w-full text-left px-3.5 py-1.5 hover:bg-zinc-900 pl-6 transition-colors font-semibold text-yellow-400"
+      >
+        John Wick
       </button>
       <button
         onClick={() => handleChangeTheme("githublight")}
