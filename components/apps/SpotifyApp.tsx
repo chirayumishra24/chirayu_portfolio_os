@@ -18,15 +18,13 @@ interface Track {
 
 const playlists = {
   lofi: [
-    { title: "Cyber Sunset", artist: "Lofi Coder", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", cover: "bg-indigo-950" },
-    { title: "Midnight Brew", artist: "Chill Hop", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", cover: "bg-purple-950" }
+    { title: "Can't Stay Down", artist: "Quincy Larson", url: "https://cdn.freecodecamp.org/curriculum/js-music-player/can't-stay-down.mp3", cover: "bg-indigo-950" }
   ],
   synthwave: [
-    { title: "Outrun Grid", artist: "Neon Rider", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", cover: "bg-pink-950" },
-    { title: "Hyperdrive", artist: "Laserhawk", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", cover: "bg-sky-950" }
+    { title: "Scratching the Surface", artist: "Quincy Larson", url: "https://cdn.freecodecamp.org/curriculum/js-music-player/scratching-the-surface.mp3", cover: "bg-pink-950" }
   ],
   nature: [
-    { title: "Rainy Desk", artist: "White Noise", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3", cover: "bg-emerald-950" }
+    { title: "Sailing Away", artist: "Quincy Larson", url: "https://cdn.freecodecamp.org/curriculum/js-music-player/sailing-away.mp3", cover: "bg-emerald-950" }
   ]
 };
 
