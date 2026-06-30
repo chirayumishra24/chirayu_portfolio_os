@@ -31,12 +31,22 @@ export default function WindowFrame({ id, children }: WindowFrameProps) {
   const [isResizing, setIsResizing] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [resizeStart, setResizeStart] = useState({ w: 0, h: 0, x: 0, y: 0 });
+  const [isMobile, setIsMobile] = useState(false);
 
   const isActive = activeWindowId === id;
 
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   // Handle Dragging
   const handleDragStart = (e: React.MouseEvent) => {
-    if (windowState.isMaximized) return;
+    if (windowState.isMaximized || isMobile) return;
     if ((e.target as HTMLElement).closest("button")) return; // Don't drag if clicking buttons
     
     focusWindow(id);
@@ -50,7 +60,7 @@ export default function WindowFrame({ id, children }: WindowFrameProps) {
 
   // Handle Resizing
   const handleResizeStart = (e: React.MouseEvent) => {
-    if (windowState?.isMaximized) return;
+    if (windowState?.isMaximized || isMobile) return;
     focusWindow(id);
     setIsResizing(true);
     setResizeStart({
@@ -65,14 +75,14 @@ export default function WindowFrame({ id, children }: WindowFrameProps) {
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      if (isDragging) {
+      if (isDragging && !isMobile) {
         // Enforce boundary checks
         const newX = Math.max(0, Math.min(window.innerWidth - 100, e.clientX - dragOffset.x));
         const newY = Math.max(0, Math.min(window.innerHeight - 80, e.clientY - dragOffset.y));
         updateWindowPosition(id, newX, newY);
       }
 
-      if (isResizing) {
+      if (isResizing && !isMobile) {
         const deltaX = e.clientX - resizeStart.x;
         const deltaY = e.clientY - resizeStart.y;
         const newWidth = Math.max(300, resizeStart.w + deltaX);
@@ -95,7 +105,7 @@ export default function WindowFrame({ id, children }: WindowFrameProps) {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isDragging, isResizing, dragOffset, resizeStart, id, updateWindowPosition, updateWindowSize]);
+  }, [isDragging, isResizing, dragOffset, resizeStart, id, updateWindowPosition, updateWindowSize, isMobile]);
 
   const handleClose = () => {
     playSound("click");
@@ -120,10 +130,10 @@ export default function WindowFrame({ id, children }: WindowFrameProps) {
       onClick={() => focusWindow(id)}
       style={{
         position: "absolute",
-        left: windowState.isMaximized ? 0 : windowState.x,
-        top: windowState.isMaximized ? 40 : windowState.y, // Leave space for top system bar
-        width: windowState.isMaximized ? "100%" : windowState.width,
-        height: windowState.isMaximized ? "calc(100vh - 88px)" : windowState.height, // Leave space for system bar + taskbar
+        left: (windowState.isMaximized || isMobile) ? 0 : windowState.x,
+        top: (windowState.isMaximized || isMobile) ? 40 : windowState.y, // Leave space for top system bar
+        width: (windowState.isMaximized || isMobile) ? "100%" : windowState.width,
+        height: (windowState.isMaximized || isMobile) ? "calc(100vh - 88px)" : windowState.height, // Leave space for system bar + taskbar
         zIndex: windowState.zIndex,
       }}
       className={clsx(
@@ -137,7 +147,8 @@ export default function WindowFrame({ id, children }: WindowFrameProps) {
         onMouseDown={handleDragStart}
         onDoubleClick={handleMaximize}
         className={clsx(
-          "h-10 px-4 flex items-center justify-between border-b cursor-move select-none shrink-0 font-sans text-xs tracking-wide",
+          "h-10 px-4 flex items-center justify-between border-b select-none shrink-0 font-sans text-xs tracking-wide",
+          (windowState.isMaximized || isMobile) ? "cursor-default" : "cursor-move",
           isActive ? "bg-zinc-950/40 text-sys-text-primary border-sys-border-active/40" : "bg-zinc-950/20 text-sys-text-secondary border-sys-border"
         )}
       >
@@ -155,13 +166,15 @@ export default function WindowFrame({ id, children }: WindowFrameProps) {
           </button>
           
           {/* Maximize */}
-          <button
-            onClick={handleMaximize}
-            className="w-5 h-5 rounded-full bg-green-500/20 hover:bg-green-500/80 text-transparent hover:text-green-950 flex items-center justify-center transition-all duration-150"
-            title={windowState.isMaximized ? "Restore" : "Maximize"}
-          >
-            {windowState.isMaximized ? <Minimize2 size={10} /> : <Square size={8} />}
-          </button>
+          {!isMobile && (
+            <button
+              onClick={handleMaximize}
+              className="w-5 h-5 rounded-full bg-green-500/20 hover:bg-green-500/80 text-transparent hover:text-green-950 flex items-center justify-center transition-all duration-150"
+              title={windowState.isMaximized ? "Restore" : "Maximize"}
+            >
+              {windowState.isMaximized ? <Minimize2 size={10} /> : <Square size={8} />}
+            </button>
+          )}
 
           {/* Close */}
           <button
@@ -180,7 +193,7 @@ export default function WindowFrame({ id, children }: WindowFrameProps) {
       </div>
 
       {/* Resize Handle */}
-      {!windowState.isMaximized && (
+      {!windowState.isMaximized && !isMobile && (
         <div
           onMouseDown={handleResizeStart}
           className="absolute bottom-0 right-0 w-4 h-4 cursor-se-resize flex items-end justify-end p-0.5 z-50 select-none"

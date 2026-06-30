@@ -16,6 +16,13 @@ export default function ResumeApp() {
   const [currentPage] = useState(1);
   const totalPages = 1;
 
+  React.useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      const calculatedZoom = Math.floor(((window.innerWidth - 48) / 650) * 100);
+      setZoom(Math.max(calculatedZoom, 45));
+    }
+  }, []);
+
   const handleZoomIn = () => {
     playSound("click");
     setZoom((prev) => Math.min(prev + 10, 150));
@@ -94,11 +101,20 @@ export default function ResumeApp() {
       {/* CV Document Container */}
       <div className="flex-1 overflow-auto p-6 bg-zinc-900/40 flex justify-center items-start select-text scrollbar-thin">
         
-        {/* Document Sheet */}
+        {/* Transform Wrapper for scaling layout bounds */}
         <div 
-          style={{ transform: `scale(${zoom / 100})`, transformOrigin: "top center" }}
-          className="w-full max-w-[650px] p-8 bg-white text-zinc-850 shadow-2xl border border-zinc-200 rounded-lg flex flex-col gap-5 transition-transform min-h-[800px] text-left text-black"
+          style={{ 
+            width: `${650 * (zoom / 100)}px`, 
+            height: `${900 * (zoom / 100)}px`, 
+            overflow: "hidden" 
+          }} 
+          className="flex justify-center items-start shrink-0"
         >
+          {/* Document Sheet */}
+          <div 
+            style={{ transform: `scale(${zoom / 100})`, transformOrigin: "top center", width: "650px", minHeight: "880px" }}
+            className="p-8 bg-white text-zinc-850 shadow-2xl border border-zinc-200 rounded-lg flex flex-col gap-5 text-left text-black shrink-0 font-sans"
+          >
           {/* Header Contact info */}
           <div className="border-b-2 border-zinc-800 pb-4 space-y-2">
             <h2 className="text-2xl font-bold uppercase tracking-wide text-zinc-900">Chirayu Mishra</h2>
@@ -209,6 +225,7 @@ export default function ResumeApp() {
             </div>
           </div>
           
+        </div>
         </div>
       </div>
     </div>

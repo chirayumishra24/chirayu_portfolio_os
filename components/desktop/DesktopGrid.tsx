@@ -35,7 +35,7 @@ export default function DesktopGrid() {
   };
 
   return (
-    <div className="absolute inset-0 pt-16 pb-20 px-8 grid grid-flow-col auto-cols-[100px] grid-rows-[repeat(auto-fill,100px)] gap-6 z-10 pointer-events-none select-none">
+    <div className="absolute inset-0 pt-16 pb-24 px-4 sm:px-8 grid grid-cols-3 sm:grid-cols-4 md:grid-flow-col md:auto-cols-[100px] md:grid-rows-[repeat(auto-fill,100px)] gap-4 sm:gap-6 z-1 overflow-y-auto md:overflow-visible pointer-events-none select-none scrollbar-none">
       {desktopIcons.map((icon) => (
         <button
           key={icon.id}

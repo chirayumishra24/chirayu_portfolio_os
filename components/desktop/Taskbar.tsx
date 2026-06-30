@@ -91,7 +91,7 @@ export default function Taskbar() {
       </div>
 
       {/* Dock Area (Central App Icons) */}
-      <div className="flex items-center gap-2 p-1 rounded-xl bg-zinc-950/20 border border-sys-border/35 shadow-inner max-w-full overflow-x-auto scrollbar-none">
+      <div className="flex items-center gap-2 p-1 rounded-xl bg-zinc-950/20 border border-sys-border/35 shadow-inner max-w-[50%] sm:max-w-[65%] md:max-w-none overflow-x-auto scrollbar-none">
         {appsList.map((app) => {
           const isOpen = windows[app.id]?.isOpen;
           const isActive = windows[app.id]?.zIndex > 1 && isOpen;
@@ -140,7 +140,7 @@ export default function Taskbar() {
 
         {/* Quick Settings Drawer */}
         {showSettings && (
-          <div className="absolute bottom-14 right-0 w-80 p-5 rounded-2xl glass-panel border border-sys-border-active shadow-2xl flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-5 duration-200">
+          <div className="absolute bottom-14 right-0 w-[calc(100vw-32px)] sm:w-80 p-5 rounded-2xl glass-panel border border-sys-border-active shadow-2xl flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-5 duration-200">
             {/* Quick Title */}
             <div className="flex items-center justify-between border-b border-sys-border pb-2.5">
               <span className="text-xs font-bold uppercase tracking-wider text-sys-text-primary">System Dashboard</span>

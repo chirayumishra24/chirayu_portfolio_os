@@ -77,18 +77,18 @@ interface OSState {
 }
 
 const initialWindows = (): Record<AppId, WindowState> => ({
-  about: { id: "about", title: "System Profiler (About)", isOpen: false, isMinimized: false, isMaximized: false, x: 80, y: 60, width: 750, height: 500, zIndex: 1 },
-  projects: { id: "projects", title: "Projects Explorer", isOpen: false, isMinimized: false, isMaximized: false, x: 120, y: 100, width: 850, height: 550, zIndex: 1 },
-  skills: { id: "skills", title: "Skills Tree", isOpen: false, isMinimized: false, isMaximized: false, x: 160, y: 140, width: 680, height: 480, zIndex: 1 },
-  experience: { id: "experience", title: "Experience git-log", isOpen: false, isMinimized: false, isMaximized: false, x: 200, y: 80, width: 800, height: 520, zIndex: 1 },
-  resume: { id: "resume", title: "Interactive CV", isOpen: false, isMinimized: false, isMaximized: false, x: 240, y: 120, width: 720, height: 600, zIndex: 1 },
-  github: { id: "github", title: "GitHub Analytics", isOpen: false, isMinimized: false, isMaximized: false, x: 100, y: 160, width: 780, height: 540, zIndex: 1 },
-  terminal: { id: "terminal", title: "xterm Terminal", isOpen: true, isMinimized: false, isMaximized: false, x: 50, y: 50, width: 700, height: 400, zIndex: 2 },
-  playground: { id: "playground", title: "JS Playground", isOpen: false, isMinimized: false, isMaximized: false, x: 220, y: 180, width: 900, height: 580, zIndex: 1 },
-  contact: { id: "contact", title: "Mail Compose (Gmail)", isOpen: false, isMinimized: false, isMaximized: false, x: 150, y: 150, width: 650, height: 480, zIndex: 1 },
-  spotify: { id: "spotify", title: "Spotify Player", isOpen: false, isMinimized: false, isMaximized: false, x: 300, y: 200, width: 360, height: 470, zIndex: 1 },
-  games: { id: "games", title: "Arcade Center", isOpen: false, isMinimized: false, isMaximized: false, x: 180, y: 90, width: 780, height: 540, zIndex: 1 },
-  settings: { id: "settings", title: "System Preferences", isOpen: false, isMinimized: false, isMaximized: false, x: 350, y: 250, width: 600, height: 450, zIndex: 1 },
+  about: { id: "about", title: "System Profiler (About)", isOpen: false, isMinimized: false, isMaximized: false, x: 320, y: 60, width: 750, height: 500, zIndex: 1 },
+  projects: { id: "projects", title: "Projects Explorer", isOpen: false, isMinimized: false, isMaximized: false, x: 340, y: 100, width: 850, height: 550, zIndex: 1 },
+  skills: { id: "skills", title: "Skills Tree", isOpen: false, isMinimized: false, isMaximized: false, x: 380, y: 140, width: 680, height: 480, zIndex: 1 },
+  experience: { id: "experience", title: "Experience git-log", isOpen: false, isMinimized: false, isMaximized: false, x: 350, y: 80, width: 800, height: 520, zIndex: 1 },
+  resume: { id: "resume", title: "Interactive CV", isOpen: false, isMinimized: false, isMaximized: false, x: 360, y: 120, width: 720, height: 600, zIndex: 1 },
+  github: { id: "github", title: "GitHub Analytics", isOpen: false, isMinimized: false, isMaximized: false, x: 330, y: 160, width: 780, height: 540, zIndex: 1 },
+  terminal: { id: "terminal", title: "xterm Terminal", isOpen: true, isMinimized: false, isMaximized: false, x: 300, y: 50, width: 700, height: 400, zIndex: 2 },
+  playground: { id: "playground", title: "JS Playground", isOpen: false, isMinimized: false, isMaximized: false, x: 380, y: 180, width: 900, height: 580, zIndex: 1 },
+  contact: { id: "contact", title: "Mail Compose (Gmail)", isOpen: false, isMinimized: false, isMaximized: false, x: 340, y: 150, width: 650, height: 480, zIndex: 1 },
+  spotify: { id: "spotify", title: "Spotify Player", isOpen: false, isMinimized: false, isMaximized: false, x: 420, y: 200, width: 360, height: 470, zIndex: 1 },
+  games: { id: "games", title: "Arcade Center", isOpen: false, isMinimized: false, isMaximized: false, x: 350, y: 90, width: 780, height: 540, zIndex: 1 },
+  settings: { id: "settings", title: "System Preferences", isOpen: false, isMinimized: false, isMaximized: false, x: 400, y: 250, width: 600, height: 450, zIndex: 1 },
 });
 
 export const useOSStore = create<OSState>()(

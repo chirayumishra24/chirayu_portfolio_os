@@ -142,15 +142,15 @@ export default function Home() {
         <div className="flex items-center gap-4 text-sys-text-secondary">
           <div className="flex items-center gap-1">
             <Wifi size={13} className="text-emerald-500" />
-            <span className="text-[10px] font-semibold tracking-wider font-mono">100Mbps</span>
+            <span className="text-[10px] font-semibold tracking-wider font-mono hidden sm:inline">100Mbps</span>
           </div>
           <div className="flex items-center gap-1.5">
             <Battery size={14} className="text-emerald-500" />
-            <span className="text-[10px] font-semibold tracking-wider font-mono">100%</span>
+            <span className="text-[10px] font-semibold tracking-wider font-mono hidden sm:inline">100%</span>
           </div>
           <div className="flex items-center gap-1">
             <ShieldCheck size={13} className="text-emerald-500" />
-            <span className="text-[10px] font-bold uppercase tracking-wider font-sans">SYS_OK</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider font-sans hidden sm:inline">SYS_OK</span>
           </div>
         </div>
       </div>
