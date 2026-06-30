@@ -85,9 +85,13 @@ export default function GithubApp() {
       <div className="flex flex-col md:flex-row items-center justify-between gap-6 border-b border-sys-border pb-5">
         <div className="flex items-center gap-4 text-center md:text-left flex-col md:flex-row">
           <div className="w-16 h-16 rounded-full bg-zinc-800 border border-sys-border overflow-hidden select-none">
-            <div className="w-full h-full bg-gradient-to-br from-zinc-700 to-zinc-900 flex items-center justify-center text-zinc-400 font-bold text-xl">
-              CD
-            </div>
+            {data.user.avatar_url ? (
+              <img src={data.user.avatar_url} alt={data.user.name} className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-zinc-700 to-zinc-900 flex items-center justify-center text-zinc-400 font-bold text-xl">
+                CD
+              </div>
+            )}
           </div>
           <div className="space-y-1">
             <h3 className="text-base font-bold text-zinc-100 flex items-center justify-center md:justify-start gap-1.5">
