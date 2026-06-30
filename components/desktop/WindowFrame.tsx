@@ -137,7 +137,7 @@ export default function WindowFrame({ id, children }: WindowFrameProps) {
         zIndex: windowState.zIndex,
       }}
       className={clsx(
-        "glass-panel rounded-xl overflow-hidden flex flex-col transition-all duration-75 select-text shadow-2xl border",
+        "glass-panel rounded-xl overflow-hidden flex flex-col transition-all duration-75 select-text shadow-2xl border pointer-events-auto",
         isActive ? "border-sys-border-active shadow-sys-accent/10" : "border-sys-border",
         isDragging && "opacity-90 scale-[0.99]"
       )}

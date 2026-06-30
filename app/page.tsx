@@ -160,7 +160,7 @@ export default function Home() {
 
       {/* Window Manager Workspace */}
       <div className="absolute inset-0 pt-10 pb-12 w-full h-full overflow-hidden pointer-events-none">
-        <div className="relative w-full h-full pointer-events-auto">
+        <div className="relative w-full h-full pointer-events-none">
           {/* About App */}
           <WindowFrame id="about">
             <AboutApp />
