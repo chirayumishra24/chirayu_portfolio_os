@@ -38,7 +38,14 @@ export type ThemeName =
   | "cyberpunk"
   | "matrix"
   | "minimalwhite"
-  | "midnightblue";
+  | "midnightblue"
+  | "kratos"
+  | "spiderverse"
+  | "heisenberg"
+  | "hazmat"
+  | "tonystark"
+  | "thor"
+  | "johnwick";
 
 interface OSState {
   theme: ThemeName;

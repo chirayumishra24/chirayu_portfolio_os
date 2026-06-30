@@ -64,6 +64,13 @@ export default function Taskbar() {
     { name: "matrix", label: "Matrix", bg: "bg-green-600" },
     { name: "minimalwhite", label: "Minimal White", bg: "bg-white border border-zinc-300" },
     { name: "midnightblue", label: "Midnight Blue", bg: "bg-blue-900" },
+    { name: "kratos", label: "Kratos", bg: "bg-red-800" },
+    { name: "spiderverse", label: "Spiderverse", bg: "bg-rose-600" },
+    { name: "heisenberg", label: "Heisenberg", bg: "bg-amber-600" },
+    { name: "hazmat", label: "Hazmat Suit", bg: "bg-lime-500" },
+    { name: "tonystark", label: "Tony Stark", bg: "bg-red-650" },
+    { name: "thor", label: "Thor", bg: "bg-cyan-500" },
+    { name: "johnwick", label: "John Wick", bg: "bg-yellow-400" },
   ];
 
   const handleThemeChange = (newTheme: ThemeName) => {
