@@ -54,11 +54,42 @@ export default function Home() {
   // Track achievements count to trigger popup
   const [unlockedCount, setUnlockedCount] = useState<number>(0);
 
-  // Prevent hydration mismatch
+  const [batteryLevel, setBatteryLevel] = useState("100%");
+  const [isCharging, setIsCharging] = useState(false);
+  const [networkSpeed, setNetworkSpeed] = useState("100Mbps");
+
+  // Prevent hydration mismatch & fetch system APIs
   useEffect(() => {
     setMounted(true);
     if (achievements) {
       setUnlockedCount(achievements.length);
+    }
+
+    // Get real battery info
+    if (typeof window !== "undefined" && typeof navigator !== "undefined") {
+      if ("getBattery" in navigator) {
+        (navigator as any).getBattery().then((battery: any) => {
+          const updateBattery = () => {
+            setBatteryLevel(`${Math.round(battery.level * 100)}%`);
+            setIsCharging(battery.charging);
+          };
+          updateBattery();
+          battery.addEventListener("levelchange", updateBattery);
+          battery.addEventListener("chargingchange", updateBattery);
+        });
+      }
+
+      // Get real network info
+      const conn = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
+      if (conn) {
+        const updateConnection = () => {
+          if (conn.downlink) {
+            setNetworkSpeed(`${conn.downlink}Mbps`);
+          }
+        };
+        updateConnection();
+        conn.addEventListener("change", updateConnection);
+      }
     }
   }, []);
 
@@ -142,11 +173,20 @@ export default function Home() {
         <div className="flex items-center gap-4 text-sys-text-secondary">
           <div className="flex items-center gap-1">
             <Wifi size={13} className="text-emerald-500" />
-            <span className="text-[10px] font-semibold tracking-wider font-mono hidden sm:inline">100Mbps</span>
+            <span className="text-[10px] font-semibold tracking-wider font-mono hidden sm:inline">{networkSpeed}</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <Battery size={14} className="text-emerald-500" />
-            <span className="text-[10px] font-semibold tracking-wider font-mono hidden sm:inline">100%</span>
+            <Battery 
+              size={14} 
+              className={
+                isCharging 
+                  ? "text-amber-400 animate-pulse" 
+                  : (parseInt(batteryLevel) < 20 ? "text-red-500 animate-bounce" : "text-emerald-500")
+              } 
+            />
+            <span className="text-[10px] font-semibold tracking-wider font-mono hidden sm:inline">
+              {isCharging ? `⚡ ${batteryLevel}` : batteryLevel}
+            </span>
           </div>
           <div className="flex items-center gap-1">
             <ShieldCheck size={13} className="text-emerald-500" />
