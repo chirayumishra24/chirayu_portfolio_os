@@ -6,7 +6,7 @@ import { useSystemSound } from "../../hooks/useSystemSound";
 import { 
   User, Folder, Brain, GitBranch, FileText, Code2, 
   Terminal, Play, Mail, Music, Gamepad2, Settings, 
-  Volume2, VolumeX, Sun, Clock, Power, ShieldCheck
+  Volume2, VolumeX, Sun, Clock, Power, ShieldCheck, FolderOpen
 } from "lucide-react";
 import { clsx } from "clsx";
 
@@ -46,6 +46,7 @@ export default function Taskbar() {
     { id: "spotify", label: "Music Player", icon: <Music size={20} /> },
     { id: "games", label: "Arcade Games", icon: <Gamepad2 size={20} /> },
     { id: "settings", label: "System Preferences", icon: <Settings size={20} /> },
+    { id: "filemanager", label: "File Manager", icon: <FolderOpen size={20} /> },
   ];
 
   const handleAppClick = (id: AppId) => {

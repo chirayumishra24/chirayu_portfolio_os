@@ -18,6 +18,7 @@ export default function SettingsApp() {
     soundVolume, setSoundVolume,
     achievements,
     resetWindows,
+    pushNotification,
   } = useOSStore();
   const { playSound } = useSystemSound();
   const [activeTab, setActiveTab] = useState<SettingsTab>("appearance");
@@ -134,7 +135,15 @@ export default function SettingsApp() {
               {themes.map((t) => (
                 <button
                   key={t.name}
-                  onClick={() => { playSound("theme"); setTheme(t.name); }}
+                  onClick={() => {
+                    playSound("theme");
+                    setTheme(t.name);
+                    pushNotification({
+                      type: "info",
+                      title: "Theme Changed",
+                      message: `System appearance theme switched to ${t.label}.`
+                    });
+                  }}
                   className={clsx(
                     "p-3 rounded-xl border flex items-center gap-3 transition-all duration-200 hover:shadow-lg",
                     theme === t.name

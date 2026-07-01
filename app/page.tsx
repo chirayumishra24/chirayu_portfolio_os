@@ -13,6 +13,8 @@ import WindowFrame from "../components/desktop/WindowFrame";
 import Taskbar from "../components/desktop/Taskbar";
 import ContextMenu from "../components/desktop/ContextMenu";
 import CommandPalette from "../components/desktop/CommandPalette";
+import NotificationCenter, { NotificationToasts } from "../components/desktop/NotificationCenter";
+import AIChatAssistant from "../components/desktop/AIChatAssistant";
 
 // Applications
 import AboutApp from "../components/apps/AboutApp";
@@ -27,6 +29,7 @@ import ContactApp from "../components/apps/ContactApp";
 import SpotifyApp from "../components/apps/SpotifyApp";
 import GamesApp from "../components/apps/GamesApp";
 import SettingsApp from "../components/apps/SettingsApp";
+import FileManagerApp from "../components/apps/FileManagerApp";
 
 const ACHIEVEMENT_DESCRIPTIONS: Record<string, string> = {
   "Curious Inspector": "Unlocked by exploring the right-click desktop context menu.",
@@ -42,14 +45,14 @@ const ACHIEVEMENT_DESCRIPTIONS: Record<string, string> = {
   "Memory Master": "Unlocked by matching all cards in the developer Memory game.",
   "Tic Tac Champion": "Unlocked by beating the minimax Tic Tac Toe AI opponent.",
   "Message Delivered": "Unlocked by sending an email query using the contact form.",
+  "AI Explorer": "Unlocked by asking ChirayuAI your first question.",
+  "Source Diver": "Unlocked by exploring source code in the File Manager.",
 };
 
 export default function Home() {
   const { bootState, theme, achievements, commandPaletteOpen, setCommandPaletteOpen } = useOSStore();
   const { playSound } = useSystemSound();
   const [mounted, setMounted] = useState(false);
-  const [recentAchievement, setRecentAchievement] = useState<string | null>(null);
-  const [showToast, setShowToast] = useState(false);
   
   // Track achievements count to trigger popup
   const [unlockedCount, setUnlockedCount] = useState<number>(0);
@@ -107,15 +110,17 @@ export default function Home() {
     if (!mounted) return;
     if (achievements.length > unlockedCount) {
       const latest = achievements[achievements.length - 1];
-      setRecentAchievement(latest);
-      setShowToast(true);
-      setUnlockedCount(achievements.length);
+      const description = ACHIEVEMENT_DESCRIPTIONS[latest] || "Secret milestone unlocked!";
       
-      // Auto dismiss after 5 seconds
-      const timer = setTimeout(() => {
-        setShowToast(false);
-      }, 5000);
-      return () => clearTimeout(timer);
+      // Push system notification which triggers toast
+      useOSStore.getState().pushNotification({
+        type: "achievement",
+        title: `🏆 Achievement Unlocked: ${latest}`,
+        message: description,
+      });
+
+      playSound("achievement");
+      setUnlockedCount(achievements.length);
     }
   }, [achievements, unlockedCount, mounted]);
 
@@ -192,6 +197,7 @@ export default function Home() {
             <ShieldCheck size={13} className="text-emerald-500" />
             <span className="text-[10px] font-bold uppercase tracking-wider font-sans hidden sm:inline">SYS_OK</span>
           </div>
+          <NotificationCenter />
         </div>
       </div>
 
@@ -260,6 +266,11 @@ export default function Home() {
           <WindowFrame id="settings">
             <SettingsApp />
           </WindowFrame>
+
+          {/* File Manager App */}
+          <WindowFrame id="filemanager">
+            <FileManagerApp />
+          </WindowFrame>
         </div>
       </div>
 
@@ -272,30 +283,12 @@ export default function Home() {
       {/* Command Palette (Raycast style) */}
       <CommandPalette />
 
-      {/* Premium Unlocked Achievement Toast Notification Banner */}
-      <AnimatePresence>
-        {showToast && recentAchievement && (
-          <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 350, damping: 25 }}
-            className="fixed bottom-16 left-6 z-[99999] max-w-sm rounded-2xl border border-amber-500 bg-zinc-950/90 backdrop-blur-xl p-4 flex gap-4 shadow-[0_15px_40px_rgba(245,158,11,0.15)] select-none pointer-events-auto"
-          >
-            {/* Achievement Icon */}
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-yellow-400 flex items-center justify-center shadow-lg shadow-amber-500/20 shrink-0">
-              <Trophy size={20} className="text-zinc-950 animate-bounce" />
-            </div>
+      {/* AI Chat Assistant (Clippy-style) */}
+      <AIChatAssistant />
 
-            {/* Content Details */}
-            <div className="space-y-1">
-              <span className="text-[9px] font-bold text-amber-500 uppercase tracking-widest block font-sans">Achievement Unlocked</span>
-              <h4 className="text-xs font-bold text-zinc-100 font-sans">{recentAchievement}</h4>
-              <p className="text-[10px] leading-relaxed text-zinc-400 font-sans">{ACHIEVEMENT_DESCRIPTIONS[recentAchievement] || "Secret milestone unlocked!"}</p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Notification Toasts (top-right) */}
+      <NotificationToasts />
+
     </div>
   );
 }

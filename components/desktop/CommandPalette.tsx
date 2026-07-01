@@ -113,6 +113,7 @@ export default function CommandPalette() {
     { id: "app-spotify", category: "Applications", label: "Open Spotify Player", action: () => handleLaunchApp("spotify") },
     { id: "app-games", category: "Applications", label: "Open Arcade Games Center", action: () => handleLaunchApp("games") },
     { id: "app-settings", category: "Applications", label: "Open System Preferences", action: () => handleLaunchApp("settings") },
+    { id: "app-filemanager", category: "Applications", label: "Open File Manager (GitHub Explorer)", action: () => handleLaunchApp("filemanager") },
     
     { id: "theme-tokyonight", category: "Themes", label: "Switch Theme: Tokyo Night", action: () => handleSetTheme("tokyonight") },
     { id: "theme-onedark", category: "Themes", label: "Switch Theme: One Dark", action: () => handleSetTheme("onedark") },

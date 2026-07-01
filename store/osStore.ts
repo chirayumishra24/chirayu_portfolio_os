@@ -13,7 +13,8 @@ export type AppId =
   | "contact"
   | "spotify"
   | "games"
-  | "settings";
+  | "settings"
+  | "filemanager";
 
 export interface WindowState {
   id: AppId;
@@ -47,6 +48,15 @@ export type ThemeName =
   | "thor"
   | "johnwick";
 
+export interface OSNotification {
+  id: string;
+  title: string;
+  message: string;
+  type: "info" | "success" | "achievement" | "music" | "error";
+  timestamp: number;
+  read: boolean;
+}
+
 interface OSState {
   theme: ThemeName;
   bootState: "booting" | "login" | "desktop";
@@ -61,6 +71,8 @@ interface OSState {
   spotifyConnected: boolean;
   currentTrackIndex: number;
   isPlaying: boolean;
+  notifications: OSNotification[];
+  unreadCount: number;
 
   setTheme: (theme: ThemeName) => void;
   setBootState: (state: "booting" | "login" | "desktop") => void;
@@ -81,6 +93,9 @@ interface OSState {
   setSpotifyConnected: (connected: boolean) => void;
   setCurrentTrackIndex: (index: number) => void;
   setIsPlaying: (playing: boolean) => void;
+  pushNotification: (n: Omit<OSNotification, "id" | "timestamp" | "read">) => void;
+  markAllRead: () => void;
+  clearNotifications: () => void;
 }
 
 const initialWindows = (): Record<AppId, WindowState> => ({
@@ -96,6 +111,7 @@ const initialWindows = (): Record<AppId, WindowState> => ({
   spotify: { id: "spotify", title: "Spotify Player", isOpen: false, isMinimized: false, isMaximized: false, x: 420, y: 200, width: 360, height: 470, zIndex: 1 },
   games: { id: "games", title: "Arcade Center", isOpen: false, isMinimized: false, isMaximized: false, x: 350, y: 90, width: 780, height: 540, zIndex: 1 },
   settings: { id: "settings", title: "System Preferences", isOpen: false, isMinimized: false, isMaximized: false, x: 400, y: 250, width: 600, height: 450, zIndex: 1 },
+  filemanager: { id: "filemanager", title: "File Manager", isOpen: false, isMinimized: false, isMaximized: false, x: 300, y: 70, width: 850, height: 550, zIndex: 1 },
 });
 
 export const useOSStore = create<OSState>()(
@@ -114,6 +130,8 @@ export const useOSStore = create<OSState>()(
       spotifyConnected: false,
       currentTrackIndex: 0,
       isPlaying: false,
+      notifications: [],
+      unreadCount: 0,
 
       setTheme: (theme) => set({ theme }),
       setBootState: (bootState) => set({ bootState }),
@@ -249,6 +267,25 @@ export const useOSStore = create<OSState>()(
       setSpotifyConnected: (spotifyConnected) => set({ spotifyConnected }),
       setCurrentTrackIndex: (currentTrackIndex) => set({ currentTrackIndex }),
       setIsPlaying: (isPlaying) => set({ isPlaying }),
+      pushNotification: (n) =>
+        set((state) => {
+          const notification: OSNotification = {
+            ...n,
+            id: `notif-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+            timestamp: Date.now(),
+            read: false,
+          };
+          return {
+            notifications: [notification, ...state.notifications].slice(0, 50),
+            unreadCount: state.unreadCount + 1,
+          };
+        }),
+      markAllRead: () =>
+        set((state) => ({
+          notifications: state.notifications.map((n) => ({ ...n, read: true })),
+          unreadCount: 0,
+        })),
+      clearNotifications: () => set({ notifications: [], unreadCount: 0 }),
     }),
     {
       name: "chirayu-os-preferences",

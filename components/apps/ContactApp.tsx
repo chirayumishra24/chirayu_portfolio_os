@@ -10,7 +10,7 @@ import {
 import { clsx } from "clsx";
 
 export default function ContactApp() {
-  const { unlockAchievement } = useOSStore();
+  const { unlockAchievement, pushNotification } = useOSStore();
   const { playSound } = useSystemSound();
 
   const [name, setName] = useState("");
@@ -62,6 +62,7 @@ export default function ContactApp() {
         localStorage.setItem("last_email_sent", Date.now().toString());
         playSound("success");
         unlockAchievement("Message Delivered");
+        pushNotification({ type: "success", title: "Message Sent", message: `Your email to Chirayu has been delivered successfully.` });
         
         // Reset form
         setName("");

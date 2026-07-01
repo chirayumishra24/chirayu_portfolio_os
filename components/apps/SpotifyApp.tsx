@@ -34,7 +34,8 @@ export default function SpotifyApp() {
     spotifyConnected, setSpotifyConnected,
     currentTrackIndex, setCurrentTrackIndex,
     isPlaying, setIsPlaying,
-    unlockAchievement
+    unlockAchievement,
+    pushNotification
   } = useOSStore();
 
   const { playSound } = useSystemSound();
@@ -71,6 +72,17 @@ export default function SpotifyApp() {
       audioRef.current.pause();
     }
   }, [isPlaying, currentTrackIndex, activePlaylist, spotifyConnected]);
+
+  // Push notification on track change
+  useEffect(() => {
+    if (isPlaying && !spotifyConnected && currentTrack) {
+      pushNotification({
+        type: "music",
+        title: "Now Playing",
+        message: `"${currentTrack.title}" by ${currentTrack.artist}`
+      });
+    }
+  }, [currentTrackIndex, activePlaylist, isPlaying, spotifyConnected]);
 
   // Audio Visualizer Setup (only when NOT using active Spotify connection)
   useEffect(() => {
@@ -177,6 +189,11 @@ export default function SpotifyApp() {
   const handleDisconnectSpotify = () => {
     playSound("click");
     setSpotifyConnected(false);
+    pushNotification({
+      type: "info",
+      title: "Spotify Disconnected",
+      message: "Switched back to local media player."
+    });
   };
 
   const handleSaveSpotifyUrl = (url: string) => {
@@ -193,6 +210,11 @@ export default function SpotifyApp() {
     setShowConfig(false);
     setIsPlaying(false); // Stop local audio
     unlockAchievement("Spotify Connected");
+    pushNotification({
+      type: "success",
+      title: "Spotify Connected",
+      message: "Your Spotify player stream has been connected successfully."
+    });
   };
 
   const handlePlaylistSelect = (name: keyof typeof playlists) => {
