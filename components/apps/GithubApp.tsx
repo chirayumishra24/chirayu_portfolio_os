@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useSystemSound } from "../../hooks/useSystemSound";
+import Image from "next/image";
 import { Code2, Star, GitFork, BookOpen, Activity, GitCommit, ShieldAlert } from "lucide-react";
 import { clsx } from "clsx";
 
@@ -23,7 +23,6 @@ interface GithubData {
 }
 
 export default function GithubApp() {
-  const { playSound } = useSystemSound();
   const [data, setData] = useState<GithubData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -79,14 +78,14 @@ export default function GithubApp() {
   };
 
   return (
-    <div className="w-full h-full p-5 space-y-6 text-zinc-300 font-sans select-text overflow-y-auto scrollbar-thin">
+    <div className="h-full w-full space-y-6 overflow-y-auto p-4 text-zinc-300 select-text font-sans scrollbar-thin sm:p-5">
       
       {/* Upper Panel: Profile header & metrics */}
       <div className="flex flex-col md:flex-row items-center justify-between gap-6 border-b border-sys-border pb-5">
         <div className="flex items-center gap-4 text-center md:text-left flex-col md:flex-row">
           <div className="w-16 h-16 rounded-full bg-zinc-800 border border-sys-border overflow-hidden select-none">
             {data.user.avatar_url ? (
-              <img src={data.user.avatar_url} alt={data.user.name} className="w-full h-full object-cover" />
+              <Image src={data.user.avatar_url} alt={data.user.name} width={64} height={64} className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-zinc-700 to-zinc-900 flex items-center justify-center text-zinc-400 font-bold text-xl">
                 CD
@@ -103,15 +102,15 @@ export default function GithubApp() {
         </div>
 
         {/* Counters */}
-        <div className="flex items-center gap-3 select-none text-xs">
-          <div className="px-4 py-2 bg-zinc-950/40 rounded-xl border border-sys-border text-center min-w-20">
+        <div className="flex flex-wrap items-center justify-center gap-3 text-xs select-none md:justify-end">
+          <div className="min-w-20 rounded-xl border border-sys-border bg-zinc-950/40 px-4 py-2 text-center">
             <p className="text-base font-bold text-zinc-100 flex items-center justify-center gap-1">
               <Star size={13} className="text-amber-500" />
               <span>{data.user.total_stars}</span>
             </p>
             <p className="text-[9px] uppercase font-bold tracking-wider text-sys-text-secondary mt-0.5">Stars</p>
           </div>
-          <div className="px-4 py-2 bg-zinc-950/40 rounded-xl border border-sys-border text-center min-w-20">
+          <div className="min-w-20 rounded-xl border border-sys-border bg-zinc-950/40 px-4 py-2 text-center">
             <p className="text-base font-bold text-zinc-100 flex items-center justify-center gap-1">
               <GitFork size={13} className="text-sys-accent" />
               <span>{data.user.total_forks}</span>
@@ -124,9 +123,9 @@ export default function GithubApp() {
       {/* Contributions Grid */}
       <div className="p-4 bg-zinc-950/40 rounded-xl border border-sys-border space-y-3">
         <span className="text-[9px] uppercase font-bold text-zinc-500 tracking-wider flex items-center gap-1 select-none">
-          <Activity size={12} className="text-sys-accent animate-pulse" /> Contributions Calendar (1,840 Commits Last Year)
+          <Activity size={12} className="text-sys-accent animate-pulse" /> Contribution Activity Preview
         </span>
-        <div className="flex flex-wrap gap-1.5 justify-center py-2">
+        <div className="flex max-h-40 flex-wrap gap-1.5 overflow-hidden py-2 sm:max-h-none sm:justify-center">
           {drawContributionGrid()}
         </div>
       </div>

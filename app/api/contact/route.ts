@@ -6,6 +6,15 @@ export const dynamic = "force-dynamic";
 
 const prisma = new PrismaClient();
 
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 export async function POST(req: Request) {
   try {
     const { name, email, subject, message } = await req.json();
@@ -35,6 +44,11 @@ export async function POST(req: Request) {
         },
       });
 
+      const safeName = escapeHtml(name);
+      const safeEmail = escapeHtml(email);
+      const safeSubject = escapeHtml(subject);
+      const safeMessage = escapeHtml(message).replace(/\n/g, "<br>");
+
       await transporter.sendMail({
         from: `"${name}" <${email}>`,
         to: CONTACT_RECEIVER,
@@ -42,11 +56,11 @@ export async function POST(req: Request) {
         text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
         html: `
           <h3>New Message from Portfolio OS</h3>
-          <p><strong>Name:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${email}</p>
-          <p><strong>Subject:</strong> ${subject}</p>
+          <p><strong>Name:</strong> ${safeName}</p>
+          <p><strong>Email:</strong> ${safeEmail}</p>
+          <p><strong>Subject:</strong> ${safeSubject}</p>
           <p><strong>Message:</strong></p>
-          <p>${message.replace(/\n/g, "<br>")}</p>
+          <p>${safeMessage}</p>
         `,
       });
       
@@ -56,8 +70,9 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ success: true, message: "Message sent successfully" });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Contact API error:", error);
-    return NextResponse.json({ message: error.message || "Failed to process request" }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Failed to process request";
+    return NextResponse.json({ message }, { status: 500 });
   }
 }

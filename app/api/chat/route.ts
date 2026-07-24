@@ -1,38 +1,21 @@
 import { NextResponse } from "next/server";
+import { aiAssistantContext, profile } from "../../../data/portfolio";
 
 export const dynamic = "force-dynamic";
 
-const SYSTEM_CONTEXT = `You are ChirayuAI, a friendly and concise AI assistant embedded in Chirayu Mishra's interactive portfolio OS website. Answer questions about Chirayu based on the following information. Keep responses brief (2-4 sentences max). Be conversational and enthusiastic. If asked something you don't know, say so honestly and suggest they contact Chirayu directly.
+interface GeminiResponse {
+  candidates?: Array<{
+    content?: {
+      parts?: Array<{
+        text?: string;
+      }>;
+    };
+  }>;
+}
 
-ABOUT:
-- Name: Chirayu Mishra
-- Role: Full-Stack Developer & Product Associate
-- Education: B.Tech (CGPA: 7.5)
-- Location: India
+const SYSTEM_CONTEXT = `You are ChirayuAI, a concise assistant embedded in ${profile.name}'s interactive portfolio OS. Answer only from the information below. Keep responses brief (2-4 sentences). If asked something that is not in the context, say you do not have that detail and suggest contacting Chirayu directly.
 
-EXPERIENCE:
-- Backend Developer Intern at SkilliZee — built REST APIs, worked with Node.js, Express, MongoDB
-- Product Associate experience bridging engineering, product design, and user experiences
-
-TECH STACK:
-- Frontend: React, Next.js, TypeScript, Tailwind CSS, Framer Motion, Three.js/R3F, GSAP
-- Backend: Node.js, Express, Prisma, MongoDB, PostgreSQL, SQLite
-- Tools: Git, GitHub, VS Code, Docker, Firebase, Vercel
-- Languages: JavaScript, TypeScript, Python, C++
-
-PROJECTS:
-- ChirayuOS Portfolio: An interactive desktop OS built with Next.js 14 featuring draggable windows, a terminal emulator, Spotify integration, arcade games, GitHub analytics, and 17+ themes
-- Multiple full-stack applications demonstrating MERN stack proficiency
-
-CONTACT:
-- Email: chirayumishra24@gmail.com
-- GitHub: github.com/chirayumishra24
-
-PERSONALITY:
-- Passionate about building beautiful, functional user interfaces
-- Loves exploring new technologies and frameworks
-- Enjoys gaming and creative coding
-- Available for opportunities and collaborations`;
+${aiAssistantContext}`;
 
 export async function POST(req: Request) {
   try {
@@ -46,7 +29,7 @@ export async function POST(req: Request) {
 
     if (!apiKey) {
       return NextResponse.json({
-        reply: "ChirayuAI is currently offline. The API key hasn't been configured yet. Feel free to reach out to Chirayu directly at chirayumishra24@gmail.com!"
+        reply: `ChirayuAI is currently offline because the API key is not configured. You can contact Chirayu directly at ${profile.email}.`
       });
     }
 
@@ -80,18 +63,18 @@ export async function POST(req: Request) {
       const errorData = await response.text();
       console.error("Gemini API error:", response.status, errorData);
       return NextResponse.json({
-        reply: "ChirayuAI encountered an issue. Try again in a moment, or contact Chirayu at chirayumishra24@gmail.com!"
+        reply: `ChirayuAI encountered an issue. Try again in a moment, or contact Chirayu at ${profile.email}.`
       });
     }
 
-    const data = await response.json();
+    const data = await response.json() as GeminiResponse;
     const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "I couldn't generate a response. Try asking something else!";
 
     return NextResponse.json({ reply });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Chat API error:", error);
     return NextResponse.json({
-      reply: "Something went wrong. Please try again or contact Chirayu directly!"
+      reply: `Something went wrong. Please try again or contact Chirayu directly at ${profile.email}.`
     });
   }
 }

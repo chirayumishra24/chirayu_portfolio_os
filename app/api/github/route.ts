@@ -1,40 +1,114 @@
 import { NextResponse } from "next/server";
+import { profile, projects } from "../../../data/portfolio";
 
 export const dynamic = "force-dynamic";
 
-// Fallback high-fidelity developer stats
-const fallbackStats = {
+interface GitHubUser {
+  login: string;
+  name: string | null;
+  avatar_url: string;
+  bio: string | null;
+  public_repos: number;
+  followers: number;
+  following: number;
+}
+
+interface GitHubRepo {
+  name: string;
+  description: string | null;
+  language: string | null;
+  stargazers_count: number;
+  forks_count: number;
+  updated_at: string;
+}
+
+interface GitHubCommit {
+  message: string;
+}
+
+interface GitHubEvent {
+  type: string;
+  repo: {
+    name: string;
+  };
+  payload: {
+    commits?: GitHubCommit[];
+  };
+  created_at: string;
+}
+
+interface PortfolioGithubData {
+  user: {
+    login: string;
+    name: string;
+    avatar_url: string;
+    bio: string;
+    public_repos: number;
+    followers: number;
+    following: number;
+    total_stars: number;
+    total_forks: number;
+  };
+  pinnedRepos: { name: string; description: string; language: string; stars: number; forks: number }[];
+  languages: { name: string; value: number }[];
+  latestCommits: { repo: string; message: string; date: string }[];
+}
+
+const fallbackStats: PortfolioGithubData = {
   user: {
     login: "chirayumishra24",
-    name: "Chirayu",
+    name: profile.name,
     avatar_url: "https://github.com/chirayumishra24.png",
-    bio: "Senior Full-Stack Architect | Building Developer Tooling & Immersive OS UX",
-    public_repos: 42,
-    followers: 128,
-    following: 64,
-    total_stars: 840,
-    total_forks: 180,
+    bio: profile.headline,
+    public_repos: 0,
+    followers: 0,
+    following: 0,
+    total_stars: 0,
+    total_forks: 0,
   },
-  pinnedRepos: [
-    { name: "chirayu-os", description: "Interactive desktop operating system built using Next.js, Framer Motion, and Monaco Editor.", language: "TypeScript", stars: 320, forks: 45 },
-    { name: "flowstate", description: "Collaborative real-time Git branching visualizer with custom graph rendering.", language: "Go", stars: 210, forks: 30 },
-    { name: "devforge", description: "Serverless code sandbox execution engine with Docker compiler instances.", language: "TypeScript", stars: 185, forks: 22 },
-    { name: "synthmedia-audio", description: "High-performance ambient audio compiler & frequency visualizer.", language: "Rust", stars: 125, forks: 12 },
-  ],
+  pinnedRepos: projects.map((project) => ({
+    name: project.name,
+    description: project.description,
+    language: "TypeScript",
+    stars: 0,
+    forks: 0,
+  })),
   languages: [
-    { name: "TypeScript", value: 45 },
-    { name: "Go", value: 25 },
-    { name: "Rust", value: 15 },
-    { name: "JavaScript", value: 10 },
-    { name: "HTML/CSS", value: 5 }
+    { name: "TypeScript", value: 40 },
+    { name: "React", value: 25 },
+    { name: "Node.js", value: 20 },
+    { name: "Product", value: 15 },
   ],
   latestCommits: [
-    { repo: "chirayu-os", message: "feat: add terminal matrix rain effect & custom sound effects", date: "2 hours ago" },
-    { repo: "flowstate", message: "fix: resolve node coordinate calculations under dragging", date: "1 day ago" },
-    { repo: "devforge", message: "refactor: migrate container sandbox isolation rules to v2", date: "3 days ago" },
-    { repo: "synthmedia-audio", message: "perf: optimize web-audio frequencies rendering buffer size", date: "5 days ago" }
-  ]
+    {
+      repo: "chirayu_portfolio_os",
+      message: "Live GitHub activity requires a configured GITHUB_TOKEN.",
+      date: "Offline",
+    },
+  ],
 };
+
+function githubHeaders(token: string) {
+  return {
+    Authorization: `Bearer ${token}`,
+    Accept: "application/vnd.github+json",
+    "X-GitHub-Api-Version": "2022-11-28",
+    "User-Agent": "ChirayuOS-Portfolio",
+  };
+}
+
+function relativeDate(input: string) {
+  const date = new Date(input);
+  const diffMs = Date.now() - date.getTime();
+  const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
+
+  if (Number.isNaN(diffHrs)) return "Recent";
+  if (diffHrs < 1) return "Just now";
+  if (diffHrs < 24) return `${diffHrs} hour${diffHrs > 1 ? "s" : ""} ago`;
+
+  const diffDays = Math.floor(diffHrs / 24);
+  return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
+}
 
 export async function GET() {
   try {
@@ -44,151 +118,98 @@ export async function GET() {
       return NextResponse.json(fallbackStats);
     }
 
-    // Fetch user profile
+    const headers = githubHeaders(token);
+
     const userRes = await fetch("https://api.github.com/user", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Accept": "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-        "User-Agent": "ChirayuOS-Portfolio"
-      },
-      next: { revalidate: 3600 } // Cache for 1 hour
+      headers,
+      next: { revalidate: 3600 },
     });
 
     if (!userRes.ok) {
       throw new Error(`GitHub User API returned status ${userRes.status}`);
     }
 
-    const userData = await userRes.json();
+    const userData = await userRes.json() as GitHubUser;
     const username = userData.login;
 
-    // Fetch repositories (up to 100)
-    const reposRes = await fetch(`https://api.github.com/user/repos?per_page=100&type=owner&sort=updated`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Accept": "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-        "User-Agent": "ChirayuOS-Portfolio"
-      },
-      next: { revalidate: 3600 }
+    const reposRes = await fetch("https://api.github.com/user/repos?per_page=100&type=owner&sort=updated", {
+      headers,
+      next: { revalidate: 3600 },
     });
 
-    let reposData = [];
-    if (reposRes.ok) {
-      reposData = await reposRes.json();
-    }
+    const reposData = reposRes.ok ? await reposRes.json() as GitHubRepo[] : [];
 
-    // Fetch events (for latest commits)
     const eventsRes = await fetch(`https://api.github.com/users/${username}/events`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Accept": "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-        "User-Agent": "ChirayuOS-Portfolio"
-      },
-      next: { revalidate: 3600 }
+      headers,
+      next: { revalidate: 3600 },
     });
 
-    let eventsData = [];
-    if (eventsRes.ok) {
-      eventsData = await eventsRes.json();
-    }
+    const eventsData = eventsRes.ok ? await eventsRes.json() as GitHubEvent[] : [];
 
-    // 1. Process User Profile Metrics
-    const totalStars = reposData.reduce((acc: number, r: any) => acc + (r.stargazers_count || 0), 0);
-    const totalForks = reposData.reduce((acc: number, r: any) => acc + (r.forks_count || 0), 0);
+    const totalStars = reposData.reduce((acc, repo) => acc + repo.stargazers_count, 0);
+    const totalForks = reposData.reduce((acc, repo) => acc + repo.forks_count, 0);
 
-    const user = {
-      login: userData.login,
-      name: userData.name || userData.login,
-      avatar_url: userData.avatar_url,
-      bio: userData.bio || "Full-Stack Developer",
-      public_repos: userData.public_repos,
-      followers: userData.followers,
-      following: userData.following,
-      total_stars: totalStars || 0,
-      total_forks: totalForks || 0,
-    };
-
-    // 2. Process Pinned / Top Repositories (take top 4 by stars, fallback to updated)
-    const sortedRepos = [...reposData].sort((a: any, b: any) => {
+    const sortedRepos = [...reposData].sort((a, b) => {
       if (b.stargazers_count !== a.stargazers_count) {
         return b.stargazers_count - a.stargazers_count;
       }
       return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
     });
 
-    const pinnedRepos = sortedRepos.slice(0, 4).map((r: any) => ({
-      name: r.name,
-      description: r.description || "No description provided.",
-      language: r.language || "TypeScript",
-      stars: r.stargazers_count || 0,
-      forks: r.forks_count || 0,
+    const pinnedRepos = sortedRepos.slice(0, 4).map((repo) => ({
+      name: repo.name,
+      description: repo.description || "No description provided.",
+      language: repo.language || "Unknown",
+      stars: repo.stargazers_count,
+      forks: repo.forks_count,
     }));
 
-    // 3. Process Languages Distribution
     const langMap: Record<string, number> = {};
-    let totalLangCount = 0;
-    reposData.forEach((r: any) => {
-      if (r.language) {
-        langMap[r.language] = (langMap[r.language] || 0) + 1;
-        totalLangCount++;
+    reposData.forEach((repo) => {
+      if (repo.language) {
+        langMap[repo.language] = (langMap[repo.language] || 0) + 1;
       }
     });
 
+    const totalLangCount = Object.values(langMap).reduce((acc, count) => acc + count, 0);
     const languages = Object.entries(langMap)
       .map(([name, count]) => ({
         name,
-        value: Math.round((count / totalLangCount) * 100),
+        value: totalLangCount > 0 ? Math.round((count / totalLangCount) * 100) : 0,
       }))
       .sort((a, b) => b.value - a.value)
       .slice(0, 5);
 
-    // 4. Process Latest Commits from events
-    const latestCommits: any[] = [];
-    const pushEvents = eventsData.filter((e: any) => e.type === "PushEvent");
-
-    pushEvents.forEach((event: any) => {
-      const repoName = event.repo.name.split("/").pop();
-      const commits = event.payload.commits || [];
-      commits.forEach((c: any) => {
-        if (latestCommits.length < 4) {
-          const date = new Date(event.created_at);
-          let dateStr = "Recent";
-          const diffMs = Date.now() - date.getTime();
-          const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
-          if (diffHrs < 1) {
-            dateStr = "Just now";
-          } else if (diffHrs < 24) {
-            dateStr = `${diffHrs} hours ago`;
-          } else {
-            const diffDays = Math.floor(diffHrs / 24);
-            dateStr = `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
-          }
-
-          latestCommits.push({
-            repo: repoName,
-            message: c.message,
-            date: dateStr,
-          });
-        }
-      });
-    });
-
-    // Fallback if no recent push events are found
-    if (latestCommits.length === 0) {
-      latestCommits.push(...fallbackStats.latestCommits);
-    }
+    const latestCommits = eventsData
+      .filter((event) => event.type === "PushEvent")
+      .flatMap((event) => {
+        const repoName = event.repo.name.split("/").pop() || event.repo.name;
+        return (event.payload.commits || []).map((commit) => ({
+          repo: repoName,
+          message: commit.message,
+          date: relativeDate(event.created_at),
+        }));
+      })
+      .slice(0, 4);
 
     return NextResponse.json({
-      user,
+      user: {
+        login: userData.login,
+        name: userData.name || userData.login,
+        avatar_url: userData.avatar_url,
+        bio: userData.bio || profile.headline,
+        public_repos: userData.public_repos,
+        followers: userData.followers,
+        following: userData.following,
+        total_stars: totalStars,
+        total_forks: totalForks,
+      },
       pinnedRepos: pinnedRepos.length > 0 ? pinnedRepos : fallbackStats.pinnedRepos,
       languages: languages.length > 0 ? languages : fallbackStats.languages,
-      latestCommits,
-    });
-
-  } catch (error: any) {
+      latestCommits: latestCommits.length > 0 ? latestCommits : fallbackStats.latestCommits,
+    } satisfies PortfolioGithubData);
+  } catch (error: unknown) {
     console.error("GitHub API error:", error);
-    return NextResponse.json(fallbackStats); // Fail gracefully back to high-fidelity fallback stats
+    return NextResponse.json(fallbackStats);
   }
 }

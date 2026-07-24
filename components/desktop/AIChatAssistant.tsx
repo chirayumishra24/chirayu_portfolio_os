@@ -6,6 +6,7 @@ import { useSystemSound } from "../../hooks/useSystemSound";
 import { Bot, X, Send, Sparkles, Loader2 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { clsx } from "clsx";
+import { profile } from "../../data/portfolio";
 
 interface ChatMessage {
   role: "user" | "assistant";
@@ -20,7 +21,7 @@ const STARTER_CHIPS = [
 ];
 
 export default function AIChatAssistant() {
-  const { unlockAchievement, pushNotification } = useOSStore();
+  const { unlockAchievement } = useOSStore();
   const { playSound } = useSystemSound();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -144,7 +145,7 @@ export default function AIChatAssistant() {
                 <div className="space-y-3">
                   <div className="bg-zinc-900/60 rounded-xl rounded-tl-sm p-3 border border-sys-border/50 max-w-[85%]">
                     <p className="text-[11px] text-zinc-300 leading-relaxed">
-                      Hey! 👋 I&apos;m <span className="font-bold text-sys-accent">ChirayuAI</span>, your personal guide to everything about Chirayu. Ask me anything!
+                      Hey! I&apos;m <span className="font-bold text-sys-accent">ChirayuAI</span>, your guide to {profile.name}&apos;s portfolio. Ask me about projects, skills, resume, or contact details.
                     </p>
                   </div>
 

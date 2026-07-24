@@ -4,16 +4,13 @@ import React, { useState, useEffect, useRef } from "react";
 import { useOSStore } from "../../store/osStore";
 import { useSystemSound } from "../../hooks/useSystemSound";
 import { 
-  Play, Pause, SkipForward, SkipBack, Volume2, 
-  VolumeX, Link, Disc, Radio, Sliders 
+  Play, Pause, SkipForward, SkipBack,
+  Link, Disc, Radio
 } from "lucide-react";
 import { clsx } from "clsx";
 
-interface Track {
-  title: string;
-  artist: string;
-  url: string;
-  cover: string;
+interface WindowWithWebkitAudioContext extends Window {
+  webkitAudioContext?: typeof AudioContext;
 }
 
 const playlists = {
@@ -71,7 +68,7 @@ export default function SpotifyApp() {
     } else {
       audioRef.current.pause();
     }
-  }, [isPlaying, currentTrackIndex, activePlaylist, spotifyConnected]);
+  }, [isPlaying, currentTrackIndex, activePlaylist, spotifyConnected, setIsPlaying]);
 
   // Push notification on track change
   useEffect(() => {
@@ -82,7 +79,7 @@ export default function SpotifyApp() {
         message: `"${currentTrack.title}" by ${currentTrack.artist}`
       });
     }
-  }, [currentTrackIndex, activePlaylist, isPlaying, spotifyConnected]);
+  }, [currentTrack, currentTrackIndex, activePlaylist, isPlaying, spotifyConnected, pushNotification]);
 
   // Audio Visualizer Setup (only when NOT using active Spotify connection)
   useEffect(() => {
@@ -91,7 +88,8 @@ export default function SpotifyApp() {
     const setupAnalyser = () => {
       if (audioContextRef.current) return;
 
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      const AudioContextClass = window.AudioContext || (window as WindowWithWebkitAudioContext).webkitAudioContext;
+      if (!AudioContextClass) return;
       const ctx = new AudioContextClass();
       const analyser = ctx.createAnalyser();
       analyser.fftSize = 64;

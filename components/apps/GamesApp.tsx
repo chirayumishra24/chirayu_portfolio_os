@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useOSStore } from "../../store/osStore";
 import { useSystemSound } from "../../hooks/useSystemSound";
-import { Gamepad2, Trophy, RotateCcw, Play, Brain, Bug, Keyboard, Grid3X3 } from "lucide-react";
+import { Gamepad2, Trophy, RotateCcw, Play, Brain, Grid3X3 } from "lucide-react";
 import { clsx } from "clsx";
 
 type GameType = "menu" | "snake" | "quiz" | "memory" | "typing" | "tictactoe";
@@ -17,6 +17,12 @@ function SnakeGame({ onBack }: { onBack: () => void }) {
   const { playSound } = useSystemSound();
   const { unlockAchievement } = useOSStore();
 
+  const setDirection = useCallback((x: number, y: number) => {
+    const current = dirRef.current;
+    if (x !== 0 && current.x === 0) dirRef.current = { x, y };
+    if (y !== 0 && current.y === 0) dirRef.current = { x, y };
+  }, []);
+
   useEffect(() => {
     const canvas = canvasRef.current!;
     const ctx = canvas.getContext("2d")!;
@@ -24,18 +30,17 @@ function SnakeGame({ onBack }: { onBack: () => void }) {
     const cols = canvas.width / gridSize;
     const rows = canvas.height / gridSize;
 
-    let snake = [{ x: 5, y: 5 }];
+    const snake = [{ x: 5, y: 5 }];
     let food = { x: Math.floor(Math.random() * cols), y: Math.floor(Math.random() * rows) };
     let localScore = 0;
 
     const techLabels = ["TS", "Go", "Rx", "Nxt", "Py", "Rs", "Dk", "K8"];
 
     const handleKey = (e: KeyboardEvent) => {
-      const d = dirRef.current;
-      if (e.key === "ArrowUp" && d.y === 0) dirRef.current = { x: 0, y: -1 };
-      if (e.key === "ArrowDown" && d.y === 0) dirRef.current = { x: 0, y: 1 };
-      if (e.key === "ArrowLeft" && d.x === 0) dirRef.current = { x: -1, y: 0 };
-      if (e.key === "ArrowRight" && d.x === 0) dirRef.current = { x: 1, y: 0 };
+      if (e.key === "ArrowUp") setDirection(0, -1);
+      if (e.key === "ArrowDown") setDirection(0, 1);
+      if (e.key === "ArrowLeft") setDirection(-1, 0);
+      if (e.key === "ArrowRight") setDirection(1, 0);
     };
     window.addEventListener("keydown", handleKey);
 
@@ -90,7 +95,7 @@ function SnakeGame({ onBack }: { onBack: () => void }) {
     }, 120);
 
     return () => { clearInterval(interval); window.removeEventListener("keydown", handleKey); };
-  }, []);
+  }, [playSound, setDirection, unlockAchievement]);
 
   const restart = () => { setGameOver(false); setScore(0); dirRef.current = { x: 1, y: 0 }; };
 
@@ -100,7 +105,15 @@ function SnakeGame({ onBack }: { onBack: () => void }) {
         <button onClick={onBack} className="text-xs text-zinc-500 hover:text-sys-accent transition-colors">← Back</button>
         <span className="text-xs font-bold text-sys-accent font-mono">Score: {score}</span>
       </div>
-      <canvas ref={canvasRef} width={400} height={300} className="rounded-xl border border-sys-border bg-zinc-950 shadow-2xl" />
+      <canvas ref={canvasRef} width={400} height={300} className="aspect-[4/3] h-auto w-full max-w-[400px] rounded-xl border border-sys-border bg-zinc-950 shadow-2xl" />
+      <div className="grid grid-cols-3 gap-2 md:hidden">
+        <span />
+        <button onClick={() => setDirection(0, -1)} className="touch-target rounded-lg border border-sys-border bg-zinc-900/60 text-xs font-bold">↑</button>
+        <span />
+        <button onClick={() => setDirection(-1, 0)} className="touch-target rounded-lg border border-sys-border bg-zinc-900/60 text-xs font-bold">←</button>
+        <button onClick={() => setDirection(0, 1)} className="touch-target rounded-lg border border-sys-border bg-zinc-900/60 text-xs font-bold">↓</button>
+        <button onClick={() => setDirection(1, 0)} className="touch-target rounded-lg border border-sys-border bg-zinc-900/60 text-xs font-bold">→</button>
+      </div>
       {gameOver && (
         <div className="text-center space-y-2">
           <p className="text-sm font-bold text-red-400">Game Over! Score: {score}</p>
@@ -166,7 +179,7 @@ function QuizGame({ onBack }: { onBack: () => void }) {
       <button onClick={onBack} className="self-start text-xs text-zinc-500 hover:text-sys-accent transition-colors">← Back</button>
       <div className="text-[10px] text-zinc-500 font-mono">Question {current + 1}/{quizQuestions.length}</div>
       <p className="text-sm font-semibold text-zinc-100 text-center font-mono">{q.q}</p>
-      <div className="w-full grid grid-cols-2 gap-2.5">
+      <div className="w-full grid grid-cols-1 gap-2.5 min-[380px]:grid-cols-2">
         {q.opts.map((opt, idx) => (
           <button
             key={idx}
@@ -231,7 +244,7 @@ function MemoryGame({ onBack }: { onBack: () => void }) {
         <button onClick={onBack} className="text-xs text-zinc-500 hover:text-sys-accent transition-colors">← Back</button>
         <span className="text-xs font-bold text-sys-accent font-mono">Moves: {moves}</span>
       </div>
-      <div className="grid grid-cols-4 gap-2.5">
+      <div className="grid grid-cols-4 gap-2">
         {cards.map((card, idx) => {
           const isFlipped = flipped.includes(idx) || matched.has(card.icon);
           return (
@@ -239,7 +252,7 @@ function MemoryGame({ onBack }: { onBack: () => void }) {
               key={card.id}
               onClick={() => handleFlip(idx)}
               className={clsx(
-                "w-16 h-16 rounded-xl border text-xl flex items-center justify-center transition-all duration-200 font-mono",
+                "h-14 w-14 rounded-xl border text-xl flex items-center justify-center transition-all duration-200 font-mono sm:h-16 sm:w-16",
                 isFlipped ? "bg-zinc-900 border-sys-accent scale-105 shadow-lg" : "bg-zinc-950/60 border-sys-border hover:border-zinc-700"
               )}
             >
@@ -363,13 +376,13 @@ export default function GamesApp() {
   if (activeGame === "tictactoe") return <TicTacToeGame onBack={() => setActiveGame("menu")} />;
 
   return (
-    <div className="w-full h-full p-6 space-y-6 font-sans text-zinc-300 select-none">
+    <div className="h-full w-full space-y-6 overflow-y-auto p-4 text-zinc-300 select-none font-sans sm:p-6">
       <div className="flex items-center gap-2 text-sys-accent border-b border-sys-border pb-3">
         <Gamepad2 size={18} />
         <span className="text-xs font-bold uppercase tracking-wider">Arcade Center</span>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 min-[380px]:grid-cols-2">
         {games.map((game) => (
           <button
             key={game.id}

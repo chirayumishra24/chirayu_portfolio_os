@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useOSStore, ThemeName, AppId } from "../../store/osStore";
 import { useSystemSound } from "../../hooks/useSystemSound";
 import confetti from "canvas-confetti";
 import { clsx } from "clsx";
+import { experienceEntries, profile, projects } from "../../data/portfolio";
 
 export default function TerminalApp() {
   const { setTheme, openWindow, unlockAchievement } = useOSStore();
@@ -29,18 +30,7 @@ export default function TerminalApp() {
   }, [terminalLogs]);
 
   // Intercept events from Command Palette or other apps
-  useEffect(() => {
-    const handleRemoteExecute = (e: Event) => {
-      const customEvent = e as CustomEvent<string>;
-      if (customEvent.detail) {
-        executeCommand(customEvent.detail);
-      }
-    };
-    window.addEventListener("terminal-execute", handleRemoteExecute);
-    return () => window.removeEventListener("terminal-execute", handleRemoteExecute);
-  }, [history]);
-
-  const executeCommand = (cmd: string) => {
+  const executeCommand = useCallback((cmd: string) => {
     const trimmed = cmd.trim();
     if (!trimmed) return;
 
@@ -65,28 +55,28 @@ export default function TerminalApp() {
       case "about":
         newLogs.push({
           type: "output",
-          text: `Chirayu is a Passionate Senior Full-Stack Developer specializing in designing immersive product ecosystems, developer CLI tools, and scalable web apps.\nStack: TypeScript, React, Next.js, Node, Go, Docker, AWS, Prisma.\nLocation: Bangalore, India.\n"Building software that feels like an experience."`
+          text: `${profile.name} is a ${profile.role}.\nFocus: ${profile.focusTags.slice(0, 6).join(", ")}.\nLocation: ${profile.location}.\n${profile.headline}`
         });
         break;
 
       case "projects":
         newLogs.push({
           type: "output",
-          text: `Key Projects:\n1. ChirayuOS   - Next.js Desktop OS Portfolio (Stack: Three.js, Monaco, xterm)\n2. DevForge    - In-browser code compiler and deployment sandbox (TypeScript, Docker)\n3. FlowState   - Collaborative Git branching visualizer (Go, React Flow)\n4. SynthMedia  - Waveform audio editor & Spotify connector (Rust, WebAudio)\n\nType 'open projects' to view project details.`
+          text: `Verified Projects:\n${projects.map((project, index) => `${index + 1}. ${project.name} - ${project.description}`).join("\n")}\n\nType 'open projects' to view project details.`
         });
         break;
 
       case "skills":
         newLogs.push({
           type: "output",
-          text: `Skills Profile:\n  JavaScript/TS  ██████████████████ 95%\n  React/Next.js  █████████████████░ 92%\n  Node.js / Go   ███████████████░░░ 85%\n  SQL/Prisma     ██████████████░░░░ 80%\n  Docker/K8s     ████████████░░░░░░ 70%`
+          text: `Skills Profile:\n${profile.focusTags.map((tag) => `  - ${tag}`).join("\n")}`
         });
         break;
 
       case "experience":
         newLogs.push({
           type: "output",
-          text: `Work History:\n- Staff Software Architect @ TechCorp (2024 - Present)\n- Senior Fullstack Engineer @ WebCrafters (2022 - 2024)\n- Frontend Engineer @ CodeSandbox (2020 - 2022)`
+          text: `Work History:\n${experienceEntries.map((entry) => `- ${entry.role} @ ${entry.company} (${entry.duration})`).join("\n")}`
         });
         break;
 
@@ -130,9 +120,9 @@ export default function TerminalApp() {
 
       case "open":
         if (!commandArg) {
-          newLogs.push({ type: "error", text: "Usage: open [about | projects | skills | experience | resume | github | playground | contact | spotify | games | settings]" });
+          newLogs.push({ type: "error", text: "Usage: open [about | projects | skills | experience | resume | github | playground | contact | spotify | games | settings | filemanager]" });
         } else {
-          const validApps: AppId[] = ["about", "projects", "skills", "experience", "resume", "github", "playground", "contact", "spotify", "games", "settings"];
+          const validApps: AppId[] = ["about", "projects", "skills", "experience", "resume", "github", "playground", "contact", "spotify", "games", "settings", "filemanager"];
           if (validApps.includes(commandArg as AppId)) {
             openWindow(commandArg as AppId);
             playSound("success");
@@ -182,7 +172,18 @@ export default function TerminalApp() {
 
     setTerminalLogs(newLogs);
     setInput("");
-  };
+  }, [openWindow, playSound, setTheme, terminalLogs, unlockAchievement]);
+
+  useEffect(() => {
+    const handleRemoteExecute = (e: Event) => {
+      const customEvent = e as CustomEvent<string>;
+      if (customEvent.detail) {
+        executeCommand(customEvent.detail);
+      }
+    };
+    window.addEventListener("terminal-execute", handleRemoteExecute);
+    return () => window.removeEventListener("terminal-execute", handleRemoteExecute);
+  }, [executeCommand]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {

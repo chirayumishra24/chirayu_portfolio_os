@@ -99,13 +99,13 @@ interface OSState {
 }
 
 const initialWindows = (): Record<AppId, WindowState> => ({
-  about: { id: "about", title: "System Profiler (About)", isOpen: false, isMinimized: false, isMaximized: false, x: 320, y: 60, width: 750, height: 500, zIndex: 1 },
+  about: { id: "about", title: "Profile Highlights", isOpen: true, isMinimized: false, isMaximized: false, x: 320, y: 60, width: 750, height: 500, zIndex: 2 },
   projects: { id: "projects", title: "Projects Explorer", isOpen: false, isMinimized: false, isMaximized: false, x: 340, y: 100, width: 850, height: 550, zIndex: 1 },
   skills: { id: "skills", title: "Skills Tree", isOpen: false, isMinimized: false, isMaximized: false, x: 380, y: 140, width: 680, height: 480, zIndex: 1 },
   experience: { id: "experience", title: "Experience git-log", isOpen: false, isMinimized: false, isMaximized: false, x: 350, y: 80, width: 800, height: 520, zIndex: 1 },
   resume: { id: "resume", title: "Interactive CV", isOpen: false, isMinimized: false, isMaximized: false, x: 360, y: 120, width: 720, height: 600, zIndex: 1 },
   github: { id: "github", title: "GitHub Analytics", isOpen: false, isMinimized: false, isMaximized: false, x: 330, y: 160, width: 780, height: 540, zIndex: 1 },
-  terminal: { id: "terminal", title: "xterm Terminal", isOpen: true, isMinimized: false, isMaximized: false, x: 300, y: 50, width: 700, height: 400, zIndex: 2 },
+  terminal: { id: "terminal", title: "xterm Terminal", isOpen: false, isMinimized: false, isMaximized: false, x: 300, y: 50, width: 700, height: 400, zIndex: 1 },
   playground: { id: "playground", title: "JS Playground", isOpen: false, isMinimized: false, isMaximized: false, x: 380, y: 180, width: 900, height: 580, zIndex: 1 },
   contact: { id: "contact", title: "Mail Compose (Gmail)", isOpen: false, isMinimized: false, isMaximized: false, x: 340, y: 150, width: 650, height: 480, zIndex: 1 },
   spotify: { id: "spotify", title: "Spotify Player", isOpen: false, isMinimized: false, isMaximized: false, x: 420, y: 200, width: 360, height: 470, zIndex: 1 },
@@ -116,12 +116,12 @@ const initialWindows = (): Record<AppId, WindowState> => ({
 
 export const useOSStore = create<OSState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       theme: "tokyonight",
       bootState: "booting",
       soundMuted: false,
       soundVolume: 50,
-      activeWindowId: "terminal",
+      activeWindowId: "about",
       windows: initialWindows(),
       commandPaletteOpen: false,
       searchOpen: false,
@@ -261,7 +261,7 @@ export const useOSStore = create<OSState>()(
         set({
           windows: initialWindows(),
           maxZIndex: 5,
-          activeWindowId: "terminal",
+          activeWindowId: "about",
         }),
 
       setSpotifyConnected: (spotifyConnected) => set({ spotifyConnected }),

@@ -3,11 +3,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useOSStore, ThemeName, AppId } from "../../store/osStore";
 import { useSystemSound } from "../../hooks/useSystemSound";
+import { useResponsiveMode } from "../../hooks/useResponsiveMode";
 import { Monitor, RefreshCw, Terminal } from "lucide-react";
 
 export default function ContextMenu() {
   const { setTheme, resetWindows, openWindow, unlockAchievement } = useOSStore();
   const { playSound } = useSystemSound();
+  const { isMobile } = useResponsiveMode();
   
   const [visible, setVisible] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -15,6 +17,7 @@ export default function ContextMenu() {
 
   useEffect(() => {
     const handleContextMenu = (e: MouseEvent) => {
+      if (isMobile) return;
       // Only show if clicking the desktop background, not inside a window/taskbar
       const target = e.target as HTMLElement;
       if (
@@ -52,9 +55,9 @@ export default function ContextMenu() {
       document.removeEventListener("contextmenu", handleContextMenu);
       document.removeEventListener("click", handleClickOutside);
     };
-  }, []);
+  }, [isMobile, playSound, unlockAchievement]);
 
-  if (!visible) return null;
+  if (!visible || isMobile) return null;
 
   const handleOpenApp = (id: AppId) => {
     openWindow(id);

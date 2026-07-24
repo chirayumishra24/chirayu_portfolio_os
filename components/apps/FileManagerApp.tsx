@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useOSStore } from "../../store/osStore";
 import { useSystemSound } from "../../hooks/useSystemSound";
+import { useResponsiveMode } from "../../hooks/useResponsiveMode";
 import {
   FolderOpen, File, ChevronRight, ArrowLeft, RefreshCw,
   FileCode, FileJson, FileText, FileImage, Loader2, Home
@@ -54,8 +55,9 @@ function formatSize(bytes: number): string {
 }
 
 export default function FileManagerApp() {
-  const { unlockAchievement, pushNotification } = useOSStore();
+  const { unlockAchievement } = useOSStore();
   const { playSound } = useSystemSound();
+  const { isMobile } = useResponsiveMode();
 
   const [currentPath, setCurrentPath] = useState("");
   const [items, setItems] = useState<FileItem[]>([]);
@@ -171,7 +173,8 @@ export default function FileManagerApp() {
         {/* File List (Left Panel) */}
         <div className={clsx(
           "overflow-y-auto scrollbar-none border-r border-sys-border",
-          selectedFile ? "w-[240px] shrink-0" : "w-full"
+          selectedFile && isMobile && "hidden",
+          selectedFile && !isMobile ? "w-[240px] shrink-0" : "w-full"
         )}>
           {loading ? (
             <div className="flex items-center justify-center h-full">
@@ -230,6 +233,18 @@ export default function FileManagerApp() {
             {/* File Header */}
             <div className="flex items-center justify-between px-4 py-2 border-b border-sys-border bg-zinc-900/20">
               <div className="flex items-center gap-2 min-w-0">
+                {isMobile && (
+                  <button
+                    onClick={() => {
+                      playSound("click");
+                      setSelectedFile(null);
+                    }}
+                    className="mr-1 rounded p-1.5 text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-zinc-100"
+                    title="Back to files"
+                  >
+                    <ArrowLeft size={14} />
+                  </button>
+                )}
                 <span className={getFileColor(selectedFile.name)}>
                   {getFileIcon(selectedFile.name)}
                 </span>

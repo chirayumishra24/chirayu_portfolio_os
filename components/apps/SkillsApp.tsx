@@ -63,9 +63,9 @@ export default function SkillsApp() {
   };
 
   return (
-    <div className="w-full h-full p-5 flex flex-col md:flex-row text-zinc-300 font-sans select-none">
+    <div className="flex h-full w-full flex-col p-4 text-zinc-300 select-none font-sans sm:p-5 md:flex-row">
       {/* Category selector left sidebar */}
-      <div className="w-full md:w-48 border-b md:border-b-0 md:border-r border-sys-border pr-0 md:pr-4 pb-4 md:pb-0 flex md:flex-col gap-2 shrink-0 select-none">
+      <div className="flex w-full shrink-0 gap-2 overflow-x-auto border-b border-sys-border pb-4 pr-0 select-none scrollbar-none md:w-48 md:flex-col md:overflow-visible md:border-b-0 md:border-r md:pb-0 md:pr-4">
         <div className="hidden md:flex items-center gap-2 text-sys-accent border-b border-sys-border pb-2.5 mb-2.5">
           <Brain size={16} />
           <span className="text-xs font-bold uppercase tracking-wider">Expertise Grid</span>
@@ -74,7 +74,7 @@ export default function SkillsApp() {
         <button
           onClick={() => handleCategorySwitch("frontend")}
           className={clsx(
-            "flex-1 md:flex-initial py-2.5 px-3.5 rounded-lg flex items-center justify-between text-left text-xs transition-colors",
+            "flex shrink-0 items-center justify-between rounded-lg px-3.5 py-2.5 text-left text-xs transition-colors md:flex-initial",
             activeCategory === "frontend" ? "bg-sys-accent/15 text-sys-accent border border-sys-accent/20" : "bg-zinc-900/40 hover:bg-zinc-900 border border-sys-border text-zinc-400"
           )}
         >
@@ -85,7 +85,7 @@ export default function SkillsApp() {
         <button
           onClick={() => handleCategorySwitch("backend")}
           className={clsx(
-            "flex-1 md:flex-initial py-2.5 px-3.5 rounded-lg flex items-center justify-between text-left text-xs transition-colors",
+            "flex shrink-0 items-center justify-between rounded-lg px-3.5 py-2.5 text-left text-xs transition-colors md:flex-initial",
             activeCategory === "backend" ? "bg-sys-accent/15 text-sys-accent border border-sys-accent/20" : "bg-zinc-900/40 hover:bg-zinc-900 border border-sys-border text-zinc-400"
           )}
         >
@@ -96,7 +96,7 @@ export default function SkillsApp() {
         <button
           onClick={() => handleCategorySwitch("infrastructure")}
           className={clsx(
-            "flex-1 md:flex-initial py-2.5 px-3.5 rounded-lg flex items-center justify-between text-left text-xs transition-colors",
+            "flex shrink-0 items-center justify-between rounded-lg px-3.5 py-2.5 text-left text-xs transition-colors md:flex-initial",
             activeCategory === "infrastructure" ? "bg-sys-accent/15 text-sys-accent border border-sys-accent/20" : "bg-zinc-900/40 hover:bg-zinc-900 border border-sys-border text-zinc-400"
           )}
         >
@@ -106,7 +106,7 @@ export default function SkillsApp() {
       </div>
 
       {/* Main content grid */}
-      <div className="flex-1 flex flex-col lg:flex-row p-0 md:pl-5 pt-4 md:pt-0 overflow-auto gap-5 min-w-0">
+      <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-auto p-0 pt-4 md:pl-5 md:pt-0 lg:flex-row">
         
         {/* Skills Cards Grid */}
         <div className="flex-1 space-y-4">

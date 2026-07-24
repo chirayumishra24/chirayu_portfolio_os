@@ -2,6 +2,14 @@ import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
+interface GitHubContentItem {
+  name: string;
+  type: "file" | "dir";
+  size: number;
+  path: string;
+  content?: string;
+}
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -28,7 +36,7 @@ export async function GET(req: Request) {
         return NextResponse.json({ error: "File not found" }, { status: 404 });
       }
 
-      const fileData = await fileRes.json();
+      const fileData = await fileRes.json() as GitHubContentItem;
 
       // Decode base64 content
       let content = "";
@@ -65,7 +73,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Path not found" }, { status: 404 });
     }
 
-    const contentsData = await contentsRes.json();
+    const contentsData = await contentsRes.json() as GitHubContentItem | GitHubContentItem[];
 
     // Handle single file response (when path points to a file, not directory)
     if (!Array.isArray(contentsData)) {
@@ -84,19 +92,19 @@ export async function GET(req: Request) {
 
     // Sort: directories first, then files alphabetically
     const items = contentsData
-      .map((item: any) => ({
+      .map((item) => ({
         name: item.name,
-        type: item.type as "file" | "dir",
+        type: item.type,
         size: item.size || 0,
         path: item.path,
       }))
-      .sort((a: any, b: any) => {
+      .sort((a, b) => {
         if (a.type !== b.type) return a.type === "dir" ? -1 : 1;
         return a.name.localeCompare(b.name);
       });
 
     return NextResponse.json({ items, currentPath: path || "/" });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("GitHub Files API error:", error);
     return NextResponse.json({ error: "Failed to fetch files" }, { status: 500 });
   }

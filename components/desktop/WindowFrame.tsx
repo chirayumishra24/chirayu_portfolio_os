@@ -3,6 +3,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { AppId, useOSStore } from "../../store/osStore";
 import { useSystemSound } from "../../hooks/useSystemSound";
+import { useResponsiveMode } from "../../hooks/useResponsiveMode";
 import { X, Minus, Square, Minimize2 } from "lucide-react";
 import { clsx } from "clsx";
 
@@ -31,18 +32,9 @@ export default function WindowFrame({ id, children }: WindowFrameProps) {
   const [isResizing, setIsResizing] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [resizeStart, setResizeStart] = useState({ w: 0, h: 0, x: 0, y: 0 });
-  const [isMobile, setIsMobile] = useState(false);
+  const { isMobile } = useResponsiveMode();
 
   const isActive = activeWindowId === id;
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   // Handle Dragging
   const handleDragStart = (e: React.MouseEvent) => {
@@ -129,15 +121,18 @@ export default function WindowFrame({ id, children }: WindowFrameProps) {
       ref={frameRef}
       onClick={() => focusWindow(id)}
       style={{
-        position: "absolute",
+        position: isMobile ? "fixed" : "absolute",
         left: (windowState.isMaximized || isMobile) ? 0 : windowState.x,
-        top: (windowState.isMaximized || isMobile) ? 40 : windowState.y, // Leave space for top system bar
-        width: (windowState.isMaximized || isMobile) ? "100%" : windowState.width,
-        height: (windowState.isMaximized || isMobile) ? "calc(100vh - 88px)" : windowState.height, // Leave space for system bar + taskbar
+        top: (windowState.isMaximized || isMobile) ? "var(--topbar-height)" : windowState.y,
+        width: (windowState.isMaximized || isMobile) ? "100vw" : windowState.width,
+        height: (windowState.isMaximized || isMobile)
+          ? "calc(100dvh - var(--topbar-height) - var(--dock-height) - var(--safe-bottom))"
+          : windowState.height,
         zIndex: windowState.zIndex,
       }}
       className={clsx(
-        "glass-panel rounded-xl overflow-hidden flex flex-col transition-all duration-75 select-text shadow-2xl border pointer-events-auto",
+        "glass-panel flex flex-col overflow-hidden border shadow-2xl transition-all duration-75 select-text pointer-events-auto",
+        isMobile ? "rounded-none" : "rounded-xl",
         isActive ? "border-sys-border-active shadow-sys-accent/10" : "border-sys-border",
         isDragging && "opacity-90 scale-[0.99]"
       )}
@@ -147,19 +142,19 @@ export default function WindowFrame({ id, children }: WindowFrameProps) {
         onMouseDown={handleDragStart}
         onDoubleClick={handleMaximize}
         className={clsx(
-          "h-10 px-4 flex items-center justify-between border-b select-none shrink-0 font-sans text-xs tracking-wide",
+          "h-10 px-3 sm:px-4 flex items-center justify-between border-b select-none shrink-0 font-sans text-xs tracking-wide",
           (windowState.isMaximized || isMobile) ? "cursor-default" : "cursor-move",
           isActive ? "bg-zinc-950/40 text-sys-text-primary border-sys-border-active/40" : "bg-zinc-950/20 text-sys-text-secondary border-sys-border"
         )}
       >
-        <span className="font-semibold">{windowState.title}</span>
+        <span className="min-w-0 truncate font-semibold">{windowState.title}</span>
         
         {/* Control Buttons */}
         <div className="flex items-center gap-2">
           {/* Minimize */}
           <button
             onClick={handleMinimize}
-            className="w-5 h-5 rounded-full bg-yellow-500/20 hover:bg-yellow-500/80 text-transparent hover:text-yellow-950 flex items-center justify-center transition-all duration-150"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-yellow-500/20 text-yellow-200 transition-all duration-150 hover:bg-yellow-500/80 hover:text-yellow-950 sm:h-5 sm:w-5 sm:text-transparent"
             title="Minimize"
           >
             <Minus size={10} />
@@ -169,7 +164,7 @@ export default function WindowFrame({ id, children }: WindowFrameProps) {
           {!isMobile && (
             <button
               onClick={handleMaximize}
-              className="w-5 h-5 rounded-full bg-green-500/20 hover:bg-green-500/80 text-transparent hover:text-green-950 flex items-center justify-center transition-all duration-150"
+              className="flex h-5 w-5 items-center justify-center rounded-full bg-green-500/20 text-transparent transition-all duration-150 hover:bg-green-500/80 hover:text-green-950"
               title={windowState.isMaximized ? "Restore" : "Maximize"}
             >
               {windowState.isMaximized ? <Minimize2 size={10} /> : <Square size={8} />}
@@ -179,7 +174,7 @@ export default function WindowFrame({ id, children }: WindowFrameProps) {
           {/* Close */}
           <button
             onClick={handleClose}
-            className="w-5 h-5 rounded-full bg-red-500/20 hover:bg-red-500/80 text-transparent hover:text-red-950 flex items-center justify-center transition-all duration-150"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-red-500/20 text-red-200 transition-all duration-150 hover:bg-red-500/80 hover:text-red-950 sm:h-5 sm:w-5 sm:text-transparent"
             title="Close"
           >
             <X size={10} />
@@ -188,7 +183,7 @@ export default function WindowFrame({ id, children }: WindowFrameProps) {
       </div>
 
       {/* Body Area */}
-      <div className="flex-1 overflow-auto bg-zinc-950/40">
+      <div className="min-h-0 flex-1 overflow-auto bg-zinc-950/40 overscroll-contain">
         {children}
       </div>
 

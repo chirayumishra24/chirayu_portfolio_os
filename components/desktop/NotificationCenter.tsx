@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useOSStore, OSNotification } from "../../store/osStore";
 import { useSystemSound } from "../../hooks/useSystemSound";
-import { Bell, X, Trash2, Check, MessageSquare, Trophy, Music, AlertCircle, Info } from "lucide-react";
+import { Bell, X, Trash2, Check, Trophy, Music, AlertCircle, Info } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { clsx } from "clsx";
 
@@ -46,10 +46,11 @@ export function NotificationToasts() {
   useEffect(() => {
     if (notifications.length === 0) return;
     const latest = notifications[0];
-    // Don't show if already visible
-    if (visibleToasts.find((t) => t.id === latest.id)) return;
 
-    setVisibleToasts((prev) => [latest, ...prev].slice(0, 3));
+    setVisibleToasts((prev) => {
+      if (prev.find((toast) => toast.id === latest.id)) return prev;
+      return [latest, ...prev].slice(0, 3);
+    });
 
     const timer = setTimeout(() => {
       setVisibleToasts((prev) => prev.filter((t) => t.id !== latest.id));

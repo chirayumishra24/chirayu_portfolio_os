@@ -4,61 +4,12 @@ import React, { useState } from "react";
 import { GitCommit, GitFork, GitMerge, Briefcase, Calendar, Code } from "lucide-react";
 import { clsx } from "clsx";
 import { useSystemSound } from "../../hooks/useSystemSound";
-
-interface Experience {
-  hash: string;
-  branch: "master" | "develop" | "feature";
-  company: string;
-  role: string;
-  duration: string;
-  commits: string[];
-  tech: string[];
-}
-
-const experienceData: Experience[] = [
-  {
-    hash: "a4f89d2",
-    branch: "master",
-    company: "SkilliZee",
-    role: "Product Associate (Full-Time)",
-    duration: "Nov 2025 - Present",
-    commits: [
-      "Interfaced natively across engineering, UI/UX design, and business teams to transform high-level roadmaps into production-ready tasks.",
-      "Drove continuous sprint cycles, grooming meetings, backlog prioritization, and core product roadmapping to preserve steady product releases.",
-      "Conducted thorough user research and quantitative usability diagnostics to map and rectify complex friction loops within the application lifecycle."
-    ],
-    tech: ["Product Roadmapping", "User Flows", "User Research", "Agile Sprints", "Backlog Prioritization", "QA Testing"],
-  },
-  {
-    hash: "b7e2c91",
-    branch: "develop",
-    company: "SkilliZee",
-    role: "Product Associate (Intern)",
-    duration: "Sep 2025 - Nov 2025",
-    commits: [
-      "Spearheaded product discovery and scoped core web feature configurations by authoring concrete Product Requirement Documents (PRDs) and user flows.",
-      "Executed extensive market research and competitive benchmarking matrices to identify potential feature vectors and white spaces for product improvements."
-    ],
-    tech: ["PRD Documentation", "Product Discovery", "Competitive Benchmarking", "User Flows", "Market Research"],
-  },
-  {
-    hash: "c6d1a5f",
-    branch: "feature",
-    company: "Speech-to-Text Project",
-    role: "Backend Engineering Intern",
-    duration: "Jan 2025 - July 2025",
-    commits: [
-      "Developed an end-to-end real-time Speech-to-Text Transcription system powered by Node.js and Mozilla DeepSpeech.",
-      "Earned Backend Engineering Internship Certificate for high-performance WebSocket audio stream calculations."
-    ],
-    tech: ["Node.js", "Mozilla DeepSpeech", "WebSockets", "Audio Streaming", "JavaScript (ES6+)"],
-  }
-];
+import { experienceEntries } from "../../data/portfolio";
 
 export default function ExperienceApp() {
   const { playSound } = useSystemSound();
   const [activeIdx, setActiveIdx] = useState(0);
-  const activeExp = experienceData[activeIdx];
+  const activeExp = experienceEntries[activeIdx];
 
   const handleSelectNode = (idx: number) => {
     playSound("click");
@@ -77,7 +28,7 @@ export default function ExperienceApp() {
           </div>
 
           <p className="text-[10px] text-sys-text-secondary leading-normal font-sans">
-            Click on any git commit node in the repository tree to analyze candidate achievements and deployment configurations.
+            Click a timeline node to review verified experience notes, responsibilities, and tools.
           </p>
         </div>
 
@@ -87,7 +38,7 @@ export default function ExperienceApp() {
           <div className="absolute top-8 bottom-8 left-12 w-0.5 bg-zinc-800" />
           <div className="absolute top-24 bottom-24 left-[72px] w-0.5 bg-zinc-800/60 border-dashed border-l border-zinc-800/80" />
 
-          {experienceData.map((exp, idx) => {
+          {experienceEntries.map((exp, idx) => {
             const isSelected = idx === activeIdx;
             return (
               <button
@@ -160,7 +111,7 @@ export default function ExperienceApp() {
               Achievements
             </span>
             <div className="space-y-2 select-text">
-              {activeExp.commits.map((commit, idx) => (
+              {activeExp.bullets.map((commit, idx) => (
                 <div key={idx} className="flex items-start gap-2.5">
                   <span className="text-sys-accent select-none shrink-0">+</span>
                   <p className="text-zinc-300 leading-normal">{commit}</p>

@@ -36,12 +36,12 @@ export default function DesktopGrid() {
   };
 
   return (
-    <div className="absolute inset-0 pt-16 pb-24 px-4 sm:px-8 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-none md:grid-flow-col md:auto-cols-[100px] md:grid-rows-[repeat(auto-fill,100px)] gap-4 sm:gap-6 z-1 overflow-y-auto md:overflow-visible pointer-events-none select-none scrollbar-none">
+    <div className="absolute inset-0 z-1 grid grid-cols-2 gap-3 overflow-y-auto px-3 pt-[calc(var(--topbar-height)+0.75rem)] pb-[calc(var(--dock-height)+var(--safe-bottom)+1rem)] pointer-events-none select-none scrollbar-none min-[380px]:grid-cols-3 sm:grid-cols-4 sm:gap-6 sm:px-8 md:grid-flow-col md:grid-cols-none md:auto-cols-[100px] md:grid-rows-[repeat(auto-fill,100px)] md:overflow-visible">
       {desktopIcons.map((icon) => (
         <button
           key={icon.id}
           onClick={() => handleLaunch(icon.id)}
-          className="pointer-events-auto w-24 h-24 rounded-2xl flex flex-col items-center justify-center gap-2 hover:bg-zinc-950/20 hover:backdrop-blur-sm border border-transparent hover:border-sys-border hover:shadow-lg transition-all duration-300 group text-center"
+          className="pointer-events-auto flex h-24 w-full flex-col items-center justify-center gap-2 rounded-2xl border border-transparent text-center transition-all duration-300 hover:border-sys-border hover:bg-zinc-950/20 hover:shadow-lg hover:backdrop-blur-sm group md:w-24"
         >
           {/* Glowing Icon Wrapper */}
           <div className={clsx(

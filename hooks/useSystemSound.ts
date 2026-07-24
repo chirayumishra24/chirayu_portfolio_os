@@ -1,16 +1,20 @@
 import { useOSStore } from "../store/osStore";
 
+export type SystemSoundType = "boot" | "click" | "error" | "success" | "theme" | "notify" | "achievement";
+
+interface WindowWithAudioContext extends Window {
+  webkitAudioContext?: typeof AudioContext;
+}
+
 export const useSystemSound = () => {
   const { soundMuted, soundVolume } = useOSStore();
 
-  const playSound = (
-    type: "boot" | "click" | "error" | "success" | "theme" | "notify" | "achievement"
-  ) => {
+  const playSound = (type: SystemSoundType) => {
     if (soundMuted) return;
 
     try {
       const AudioContextClass =
-        window.AudioContext || (window as any).webkitAudioContext;
+        window.AudioContext || (window as WindowWithAudioContext).webkitAudioContext;
       if (!AudioContextClass) return;
 
       const ctx = new AudioContextClass();

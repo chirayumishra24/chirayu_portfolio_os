@@ -6,6 +6,7 @@ import { useOSStore } from "../../store/osStore";
 import { useSystemSound } from "../../hooks/useSystemSound";
 import { Play, RotateCcw, Trash2, Code, Terminal, Zap } from "lucide-react";
 import { clsx } from "clsx";
+import { profile } from "../../data/portfolio";
 
 const templates = {
   basic: `// Welcome to ChirayuOS JavaScript Sandbox
@@ -14,9 +15,9 @@ const templates = {
 console.log("Hello, World!");
 
 const user = {
-  name: "Chirayu",
-  role: "Senior Full Stack Architect",
-  experience: "8+ Years"
+  name: "${profile.name}",
+  role: "${profile.role}",
+  focus: "Full-stack development + product execution"
 };
 
 console.log("Developer Profile:", user);
@@ -83,7 +84,7 @@ export default function PlaygroundApp() {
 
     window.addEventListener("message", handleSandboxMessage);
     return () => window.removeEventListener("message", handleSandboxMessage);
-  }, []);
+  }, [unlockAchievement]);
 
   const handleRun = () => {
     playSound("click");
@@ -120,7 +121,7 @@ export default function PlaygroundApp() {
   const monacoTheme = theme === "githublight" || theme === "minimalwhite" ? "vs-light" : "vs-dark";
 
   return (
-    <div className="w-full h-full flex flex-col md:flex-row text-zinc-300 select-text">
+    <div className="flex h-full w-full flex-col text-zinc-300 select-text md:flex-row">
       {/* Dynamic Sandbox Iframe (Securely Hidden) */}
       <iframe
         ref={sandboxRef}
@@ -160,8 +161,8 @@ export default function PlaygroundApp() {
       />
 
       {/* Sidebar Controls */}
-      <div className="w-full md:w-48 bg-zinc-950/60 border-b md:border-b-0 md:border-r border-sys-border p-4 flex flex-col justify-between gap-4 shrink-0 font-sans select-none">
-        <div className="space-y-4">
+      <div className="flex w-full shrink-0 flex-col gap-3 border-b border-sys-border bg-zinc-950/60 p-3 font-sans select-none md:w-48 md:justify-between md:border-b-0 md:border-r md:p-4">
+        <div className="space-y-3 md:space-y-4">
           <div className="flex items-center gap-2 text-sys-accent border-b border-sys-border pb-2.5">
             <Code size={16} />
             <span className="text-xs font-bold uppercase tracking-wider">Playground</span>
@@ -170,29 +171,31 @@ export default function PlaygroundApp() {
           {/* Code Templates */}
           <div className="space-y-1.5">
             <span className="text-[10px] uppercase font-bold text-zinc-500 tracking-wide">Templates</span>
-            <button
-              onClick={() => loadTemplate("basic")}
-              className="w-full text-left text-xs py-1.5 px-3 rounded bg-zinc-900/40 hover:bg-zinc-900 border border-sys-border transition-colors text-zinc-300"
-            >
-              Hello Profile
-            </button>
-            <button
-              onClick={() => loadTemplate("fibonacci")}
-              className="w-full text-left text-xs py-1.5 px-3 rounded bg-zinc-900/40 hover:bg-zinc-900 border border-sys-border transition-colors text-zinc-300"
-            >
-              Fibonacci Iteration
-            </button>
-            <button
-              onClick={() => loadTemplate("async")}
-              className="w-full text-left text-xs py-1.5 px-3 rounded bg-zinc-900/40 hover:bg-zinc-900 border border-sys-border transition-colors text-zinc-300"
-            >
-              Async API Call
-            </button>
+            <div className="flex gap-2 overflow-x-auto scrollbar-none md:block md:space-y-1.5 md:overflow-visible">
+              <button
+                onClick={() => loadTemplate("basic")}
+                className="shrink-0 rounded border border-sys-border bg-zinc-900/40 px-3 py-2 text-left text-xs text-zinc-300 transition-colors hover:bg-zinc-900 md:w-full md:py-1.5"
+              >
+                Hello Profile
+              </button>
+              <button
+                onClick={() => loadTemplate("fibonacci")}
+                className="shrink-0 rounded border border-sys-border bg-zinc-900/40 px-3 py-2 text-left text-xs text-zinc-300 transition-colors hover:bg-zinc-900 md:w-full md:py-1.5"
+              >
+                Fibonacci Iteration
+              </button>
+              <button
+                onClick={() => loadTemplate("async")}
+                className="shrink-0 rounded border border-sys-border bg-zinc-900/40 px-3 py-2 text-left text-xs text-zinc-300 transition-colors hover:bg-zinc-900 md:w-full md:py-1.5"
+              >
+                Async API Call
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Execution actions */}
-        <div className="flex md:flex-col gap-2">
+        <div className="flex gap-2 md:flex-col">
           <button
             onClick={handleRun}
             disabled={isRunning}
@@ -223,9 +226,9 @@ export default function PlaygroundApp() {
       </div>
 
       {/* Editor & Console Split View */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex min-h-0 flex-1 flex-col md:min-w-0">
         {/* Editor Area */}
-        <div className="flex-1 min-h-[300px] border-b border-sys-border">
+        <div className="min-h-[220px] flex-1 border-b border-sys-border sm:min-h-[300px]">
           <Editor
             height="100%"
             language="javascript"
@@ -245,7 +248,7 @@ export default function PlaygroundApp() {
         </div>
 
         {/* Console Logs Area */}
-        <div className="h-52 bg-zinc-950/80 p-4 flex flex-col font-mono text-xs select-text">
+        <div className="flex h-44 flex-col bg-zinc-950/80 p-4 text-xs select-text font-mono sm:h-52">
           {/* Header info */}
           <div className="flex items-center justify-between border-b border-sys-border/50 pb-2 mb-2 text-zinc-500 select-none">
             <span className="flex items-center gap-1.5 font-sans font-semibold text-[10px] uppercase tracking-wider text-zinc-400">

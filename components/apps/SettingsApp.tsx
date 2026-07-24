@@ -2,10 +2,10 @@
 
 import React, { useState } from "react";
 import { useOSStore, ThemeName } from "../../store/osStore";
-import { useSystemSound } from "../../hooks/useSystemSound";
+import { SystemSoundType, useSystemSound } from "../../hooks/useSystemSound";
 import {
-  Settings, Paintbrush, Volume2, VolumeX, Eye, Monitor,
-  Accessibility, Code, RotateCcw, Download, Upload, Sun, Trophy
+  Settings, Paintbrush, Volume2, Eye, Monitor,
+  Accessibility, Code, RotateCcw, Download, Upload, Trophy
 } from "lucide-react";
 import { clsx } from "clsx";
 
@@ -97,10 +97,10 @@ export default function SettingsApp() {
   };
 
   return (
-    <div className="w-full h-full flex text-zinc-300 font-sans select-none">
+    <div className="flex h-full w-full flex-col text-zinc-300 select-none font-sans md:flex-row">
       {/* Sidebar Navigation */}
-      <div className="w-48 bg-zinc-950/60 border-r border-sys-border p-3 flex flex-col gap-1 shrink-0">
-        <div className="flex items-center gap-2 text-sys-accent border-b border-sys-border pb-2.5 mb-2">
+      <div className="flex w-full shrink-0 gap-2 overflow-x-auto border-b border-sys-border bg-zinc-950/60 p-3 scrollbar-none md:w-48 md:flex-col md:overflow-visible md:border-b-0 md:border-r">
+        <div className="hidden items-center gap-2 text-sys-accent border-b border-sys-border pb-2.5 mb-2 md:flex">
           <Settings size={14} />
           <span className="text-[10px] font-bold uppercase tracking-wider">Preferences</span>
         </div>
@@ -110,7 +110,7 @@ export default function SettingsApp() {
             key={tab.id}
             onClick={() => { playSound("click"); setActiveTab(tab.id); }}
             className={clsx(
-              "py-2 px-3 rounded-lg flex items-center gap-2.5 text-xs transition-colors",
+              "flex shrink-0 items-center gap-2.5 rounded-lg px-3 py-2 text-xs transition-colors",
               activeTab === tab.id
                 ? "bg-sys-accent/15 text-sys-accent border border-sys-accent/20"
                 : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200"
@@ -123,7 +123,7 @@ export default function SettingsApp() {
       </div>
 
       {/* Settings Content */}
-      <div className="flex-1 p-6 overflow-y-auto scrollbar-thin">
+      <div className="min-h-0 flex-1 overflow-y-auto p-4 scrollbar-thin sm:p-6">
         {activeTab === "appearance" && (
           <div className="space-y-6">
             <div className="space-y-1.5 border-b border-sys-border pb-4">
@@ -131,7 +131,7 @@ export default function SettingsApp() {
               <p className="text-xs text-sys-text-secondary">Select a visual theme. Changes apply instantly across all windows and system components.</p>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 gap-3 min-[380px]:grid-cols-2 sm:grid-cols-3">
               {themes.map((t) => (
                 <button
                   key={t.name}
@@ -200,14 +200,14 @@ export default function SettingsApp() {
                 />
               </div>
 
-              <div className="grid grid-cols-3 gap-2 pt-2">
-                {["Boot", "Click", "Success", "Error", "Theme", "Achievement"].map((s) => (
+              <div className="grid grid-cols-2 gap-2 pt-2 sm:grid-cols-3">
+                {(["boot", "click", "success", "error", "theme", "achievement"] satisfies SystemSoundType[]).map((s) => (
                   <button
                     key={s}
-                    onClick={() => playSound(s.toLowerCase() as any)}
+                    onClick={() => playSound(s)}
                     className="py-2 px-3 rounded-lg bg-zinc-900/40 hover:bg-zinc-900 border border-sys-border text-xs font-semibold transition-colors"
                   >
-                    ▶ {s}
+                    ▶ {s[0].toUpperCase() + s.slice(1)}
                   </button>
                 ))}
               </div>
@@ -275,7 +275,7 @@ export default function SettingsApp() {
             </div>
 
             {achievements.length > 0 ? (
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 min-[380px]:grid-cols-2">
                 {achievements.map((a) => (
                   <div key={a} className="p-3 rounded-xl bg-amber-950/20 border border-amber-500/20 flex items-center gap-3">
                     <Trophy size={16} className="text-amber-400 shrink-0" />

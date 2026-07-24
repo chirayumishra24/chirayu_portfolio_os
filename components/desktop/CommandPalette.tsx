@@ -54,7 +54,7 @@ export default function CommandPalette() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [commandPaletteOpen]);
+  }, [commandPaletteOpen, playSound, setCommandPaletteOpen]);
 
   useEffect(() => {
     if (commandPaletteOpen) {
@@ -63,7 +63,7 @@ export default function CommandPalette() {
       setTimeout(() => inputRef.current?.focus(), 50);
       unlockAchievement("Keyboard Ninja");
     }
-  }, [commandPaletteOpen]);
+  }, [commandPaletteOpen, unlockAchievement]);
 
   if (!commandPaletteOpen) return null;
 
@@ -213,7 +213,7 @@ export default function CommandPalette() {
             })
           ) : (
             <div className="py-8 text-center text-xs text-zinc-500 font-medium">
-              No system commands found for "{search}"
+              No system commands found for &quot;{search}&quot;
             </div>
           )}
         </div>

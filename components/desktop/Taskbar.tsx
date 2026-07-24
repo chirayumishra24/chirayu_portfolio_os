@@ -85,12 +85,12 @@ export default function Taskbar() {
   };
 
   return (
-    <div className="h-12 w-full fixed bottom-0 left-0 bg-sys-taskbar border-t border-sys-border backdrop-blur-xl flex items-center justify-between px-6 z-[9999] select-none">
+    <div className="fixed bottom-0 left-0 z-[9999] flex h-[calc(var(--dock-height)+var(--safe-bottom))] w-full items-center justify-between gap-2 border-t border-sys-border bg-sys-taskbar px-2 pb-[var(--safe-bottom)] backdrop-blur-xl select-none sm:px-6">
       {/* Start Button & Quick Stats */}
-      <div className="flex items-center gap-3">
+      <div className="flex shrink-0 items-center gap-2 sm:gap-3">
         <button
           onClick={handleRestart}
-          className="h-8 w-8 rounded-lg bg-zinc-950/50 hover:bg-zinc-950 text-sys-accent flex items-center justify-center border border-sys-border hover:border-sys-border-active transition-all duration-150 group"
+          className="touch-target flex h-9 w-9 items-center justify-center rounded-lg border border-sys-border bg-zinc-950/50 text-sys-accent transition-all duration-150 hover:border-sys-border-active hover:bg-zinc-950 group sm:h-8 sm:w-8 sm:min-h-0 sm:min-w-0"
           title="Restart OS"
         >
           <Power size={15} className="group-hover:rotate-12 transition-transform" />
@@ -99,7 +99,7 @@ export default function Taskbar() {
       </div>
 
       {/* Dock Area (Central App Icons) */}
-      <div className="flex items-center gap-2 p-1 rounded-xl bg-zinc-950/20 border border-sys-border/35 shadow-inner max-w-[50%] sm:max-w-[65%] md:max-w-none overflow-x-auto scrollbar-none">
+      <div className="flex min-w-0 flex-1 items-center gap-1 overflow-x-auto rounded-xl border border-sys-border/35 bg-zinc-950/20 p-1 shadow-inner scrollbar-none sm:max-w-[65%] sm:gap-2 md:max-w-none md:flex-none">
         {appsList.map((app) => {
           const isOpen = windows[app.id]?.isOpen;
           const isActive = windows[app.id]?.zIndex > 1 && isOpen;
@@ -109,14 +109,14 @@ export default function Taskbar() {
               key={app.id}
               onClick={() => handleAppClick(app.id)}
               className={clsx(
-                "relative group p-2 rounded-lg text-sys-text-secondary hover:text-sys-accent hover:bg-zinc-950/40 hover:-translate-y-0.5 transition-all duration-200",
+                "touch-target relative flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-sys-text-secondary transition-all duration-200 hover:-translate-y-0.5 hover:bg-zinc-950/40 hover:text-sys-accent group sm:h-auto sm:w-auto sm:min-h-0 sm:min-w-0 sm:p-2",
                 isActive && "text-sys-accent bg-zinc-950/30"
               )}
             >
               {app.icon}
               
               {/* Tooltip */}
-              <span className="absolute bottom-12 left-1/2 -translate-x-1/2 bg-zinc-950 text-zinc-100 text-[10px] py-1 px-2 rounded border border-zinc-800 opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap shadow-xl">
+              <span className="pointer-events-none absolute bottom-12 left-1/2 hidden -translate-x-1/2 whitespace-nowrap rounded border border-zinc-800 bg-zinc-950 px-2 py-1 text-[10px] text-zinc-100 opacity-0 shadow-xl transition-opacity duration-200 group-hover:opacity-100 md:block">
                 {app.label}
               </span>
 
@@ -133,22 +133,22 @@ export default function Taskbar() {
       </div>
 
       {/* Clock & System Settings Dropdown */}
-      <div className="flex items-center gap-4 relative">
+      <div className="relative flex shrink-0 items-center gap-2 sm:gap-4">
         {/* Toggle Settings Button */}
         <button
           onClick={() => setShowSettings(!showSettings)}
           className={clsx(
-            "flex items-center gap-2 px-2.5 py-1 rounded-lg text-sys-text-primary hover:bg-zinc-950/30 transition-all duration-150 border border-transparent",
+            "touch-target flex items-center gap-1 rounded-lg border border-transparent px-2 py-1 text-sys-text-primary transition-all duration-150 hover:bg-zinc-950/30 sm:min-h-0 sm:min-w-0 sm:gap-2 sm:px-2.5",
             showSettings && "bg-zinc-950/30 border-sys-border-active"
           )}
         >
           <Clock size={14} className="text-sys-accent" />
-          <span className="text-xs font-semibold tracking-wider font-mono">{timeStr}</span>
+          <span className="hidden text-xs font-semibold tracking-wider font-mono min-[380px]:inline">{timeStr}</span>
         </button>
 
         {/* Quick Settings Drawer */}
         {showSettings && (
-          <div className="absolute bottom-14 right-0 w-[calc(100vw-32px)] sm:w-80 p-5 rounded-2xl glass-panel border border-sys-border-active shadow-2xl flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-5 duration-200">
+          <div className="absolute bottom-[calc(var(--dock-height)+var(--safe-bottom)+0.5rem)] right-0 flex w-[calc(100vw-1rem)] max-w-80 flex-col gap-4 rounded-2xl border border-sys-border-active p-4 shadow-2xl animate-in fade-in slide-in-from-bottom-5 duration-200 glass-panel sm:w-80 sm:p-5">
             {/* Quick Title */}
             <div className="flex items-center justify-between border-b border-sys-border pb-2.5">
               <span className="text-xs font-bold uppercase tracking-wider text-sys-text-primary">System Dashboard</span>
