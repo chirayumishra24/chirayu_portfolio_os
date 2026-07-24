@@ -5,7 +5,7 @@ import { useOSStore } from "../../store/osStore";
 import { useSystemSound } from "../../hooks/useSystemSound";
 import { 
   Mail, Send, Trash2, ArrowLeft, SendHorizontal, 
-  Code2, Briefcase, MessageCircle, Calendar, AlertCircle
+  Code2, Briefcase, MessageCircle, Calendar, AlertCircle, Copy, Check
 } from "lucide-react";
 import { profile, socialLinks, SocialLink } from "../../data/portfolio";
 
@@ -21,6 +21,7 @@ export default function ContactApp() {
   const [isSending, setIsSending] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [copiedEmail, setCopiedEmail] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,7 +76,7 @@ export default function ContactApp() {
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Server error. Please try again.";
-      setErrorMsg(message);
+      setErrorMsg(`${message} You can still email directly using the fallback button below.`);
       playSound("error");
     } finally {
       setIsSending(false);
@@ -89,6 +90,24 @@ export default function ContactApp() {
   };
 
   const visibleLinks = socialLinks.filter((link) => link.visible && link.href);
+  const mailtoDraftHref = `mailto:${profile.email}?subject=${encodeURIComponent(subject || "Portfolio inquiry")}&body=${encodeURIComponent(
+    message
+      ? `${message}\n\nFrom: ${name || "Your name"}${email ? ` (${email})` : ""}`
+      : `Hi Chirayu,\n\nI saw your portfolio and wanted to connect.\n\nFrom: ${name || "Your name"}${email ? ` (${email})` : ""}`
+  )}`;
+
+  const handleCopyEmail = async () => {
+    try {
+      await navigator.clipboard.writeText(profile.email);
+      setCopiedEmail(true);
+      playSound("success");
+      setTimeout(() => setCopiedEmail(false), 2000);
+    } catch {
+      setErrorMsg(`Copy failed. Email directly at ${profile.email}.`);
+      playSound("error");
+    }
+  };
+
   const linkIcons: Record<SocialLink["kind"], React.ReactNode> = {
     github: <Code2 size={14} className="text-sys-accent" />,
     email: <Mail size={14} className="text-sys-accent" />,
@@ -105,6 +124,24 @@ export default function ContactApp() {
           <div className="flex items-center gap-2 text-sys-accent border-b border-sys-border pb-2.5">
             <Mail size={16} />
             <span className="text-xs font-bold uppercase tracking-wider">Quick Connect</span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 md:grid-cols-1">
+            <button
+              type="button"
+              onClick={handleCopyEmail}
+              className="flex items-center justify-center gap-2 rounded border border-sys-border px-3 py-2 text-xs text-zinc-300 transition-colors hover:bg-zinc-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sys-accent"
+            >
+              {copiedEmail ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} className="text-sys-accent" />}
+              <span>{copiedEmail ? "Copied" : "Copy Email"}</span>
+            </button>
+            <a
+              href={`mailto:${profile.email}`}
+              className="flex items-center justify-center gap-2 rounded border border-sys-border px-3 py-2 text-xs text-zinc-300 transition-colors hover:bg-zinc-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sys-accent"
+            >
+              <Mail size={14} className="text-sys-accent" />
+              <span>Mail App</span>
+            </a>
           </div>
 
           {/* Socials & Booking Grid */}
@@ -174,9 +211,18 @@ export default function ContactApp() {
 
             {/* Error Message */}
             {errorMsg && (
-              <div className="p-3 bg-red-950/40 border border-red-500/20 rounded-lg flex items-center gap-2.5 text-xs text-red-400 select-none">
-                <AlertCircle size={14} className="shrink-0" />
-                <span>{errorMsg}</span>
+              <div className="space-y-2 rounded-lg border border-red-500/20 bg-red-950/40 p-3 text-xs text-red-400 select-none">
+                <div className="flex items-start gap-2.5">
+                  <AlertCircle size={14} className="mt-0.5 shrink-0" />
+                  <span>{errorMsg}</span>
+                </div>
+                <a
+                  href={mailtoDraftHref}
+                  className="inline-flex items-center gap-1.5 rounded border border-red-500/30 px-2 py-1 text-[11px] font-bold text-red-200 transition-colors hover:bg-red-950"
+                >
+                  <Mail size={12} />
+                  Open fallback email
+                </a>
               </div>
             )}
 
@@ -244,6 +290,13 @@ export default function ContactApp() {
                   </>
                 )}
               </button>
+              <a
+                href={mailtoDraftHref}
+                className="ml-2 hidden items-center gap-1.5 rounded border border-sys-border px-3 py-2 text-[11px] font-bold text-zinc-300 transition-colors hover:bg-zinc-900 sm:flex"
+              >
+                <Mail size={12} />
+                Fallback
+              </a>
             </div>
           </form>
         )}

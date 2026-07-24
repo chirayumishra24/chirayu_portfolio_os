@@ -3,7 +3,7 @@
 import React from "react";
 import { useOSStore } from "../../store/osStore";
 import { useSystemSound } from "../../hooks/useSystemSound";
-import { Award, Code, Globe, User, BookOpen, Coffee, HelpCircle, FileText, Folder, Mail } from "lucide-react";
+import { Award, Code, Globe, User, BookOpen, Coffee, HelpCircle, FileText, Folder, Mail, CheckCircle2 } from "lucide-react";
 import { profile } from "../../data/portfolio";
 
 export default function AboutApp() {
@@ -51,6 +51,25 @@ export default function AboutApp() {
           </div>
         ))}
       </div>
+
+      {/* Recruiter Summary */}
+      <section className="rounded-2xl border border-sys-accent/25 bg-sys-accent/10 p-4">
+        <div className="grid gap-4 md:grid-cols-[1.2fr_1fr]">
+          <div className="space-y-2">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-sys-accent select-none">Recruiter Quick Scan</h3>
+            <p className="text-sm leading-relaxed text-zinc-200">{profile.recruiterSummary}</p>
+          </div>
+
+          <div className="space-y-2">
+            {profile.strengths.slice(0, 3).map((strength) => (
+              <div key={strength} className="flex items-start gap-2 text-xs leading-relaxed text-sys-text-secondary">
+                <CheckCircle2 size={14} className="mt-0.5 shrink-0 text-emerald-400" />
+                <span>{strength}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Text Info Column */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

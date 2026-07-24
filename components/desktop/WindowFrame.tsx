@@ -110,6 +110,7 @@ export default function WindowFrame({ id, children }: WindowFrameProps) {
   };
 
   const handleMaximize = () => {
+    if (isMobile) return;
     playSound("click");
     maximizeWindow(id);
   };
@@ -154,6 +155,7 @@ export default function WindowFrame({ id, children }: WindowFrameProps) {
           {/* Minimize */}
           <button
             onClick={handleMinimize}
+            aria-label={`Minimize ${windowState.title}`}
             className="flex h-8 w-8 items-center justify-center rounded-full bg-yellow-500/20 text-yellow-200 transition-all duration-150 hover:bg-yellow-500/80 hover:text-yellow-950 sm:h-5 sm:w-5 sm:text-transparent"
             title="Minimize"
           >
@@ -164,6 +166,7 @@ export default function WindowFrame({ id, children }: WindowFrameProps) {
           {!isMobile && (
             <button
               onClick={handleMaximize}
+              aria-label={windowState.isMaximized ? `Restore ${windowState.title}` : `Maximize ${windowState.title}`}
               className="flex h-5 w-5 items-center justify-center rounded-full bg-green-500/20 text-transparent transition-all duration-150 hover:bg-green-500/80 hover:text-green-950"
               title={windowState.isMaximized ? "Restore" : "Maximize"}
             >
@@ -174,6 +177,7 @@ export default function WindowFrame({ id, children }: WindowFrameProps) {
           {/* Close */}
           <button
             onClick={handleClose}
+            aria-label={`Close ${windowState.title}`}
             className="flex h-8 w-8 items-center justify-center rounded-full bg-red-500/20 text-red-200 transition-all duration-150 hover:bg-red-500/80 hover:text-red-950 sm:h-5 sm:w-5 sm:text-transparent"
             title="Close"
           >

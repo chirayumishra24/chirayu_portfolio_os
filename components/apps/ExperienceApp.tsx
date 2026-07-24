@@ -17,9 +17,9 @@ export default function ExperienceApp() {
   };
 
   return (
-    <div className="w-full h-full p-6 flex flex-col lg:flex-row text-zinc-300 font-mono text-xs select-text">
+    <div className="flex h-full w-full flex-col overflow-y-auto p-4 font-mono text-xs text-zinc-300 select-text lg:flex-row lg:overflow-hidden lg:p-6">
       {/* Git Timeline Graphical Panel */}
-      <div className="w-full lg:w-96 border-b lg:border-b-0 lg:border-r border-sys-border pr-0 lg:pr-6 pb-6 lg:pb-0 flex flex-col justify-between gap-4 shrink-0 select-none">
+      <div className="flex w-full shrink-0 flex-col justify-between gap-4 border-b border-sys-border pb-6 pr-0 select-none lg:w-96 lg:border-b-0 lg:border-r lg:pb-0 lg:pr-6">
         
         <div className="space-y-4">
           <div className="flex items-center gap-2 text-sys-accent border-b border-sys-border pb-2.5 mb-2.5">
@@ -33,7 +33,7 @@ export default function ExperienceApp() {
         </div>
 
         {/* Tree Graph Layout */}
-        <div className="flex-1 flex flex-col justify-center py-6 pl-4 relative space-y-12">
+        <div className="relative flex flex-col justify-center space-y-8 py-5 pl-2 min-[380px]:pl-4 sm:space-y-10 lg:flex-1 lg:space-y-12 lg:py-6">
           {/* Vertical Branch lines */}
           <div className="absolute top-8 bottom-8 left-12 w-0.5 bg-zinc-800" />
           <div className="absolute top-24 bottom-24 left-[72px] w-0.5 bg-zinc-800/60 border-dashed border-l border-zinc-800/80" />
@@ -44,7 +44,7 @@ export default function ExperienceApp() {
               <button
                 key={exp.hash}
                 onClick={() => handleSelectNode(idx)}
-                className="flex items-center gap-6 group text-left relative focus:outline-none"
+                className="group relative flex touch-target items-center gap-4 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sys-accent min-[380px]:gap-6"
               >
                 {/* Node representation */}
                 <div className="relative flex items-center justify-center shrink-0">
@@ -86,7 +86,7 @@ export default function ExperienceApp() {
       </div>
 
       {/* Commit Metadata Viewer */}
-      <div className="flex-1 p-0 lg:pl-6 pt-6 lg:pt-0 overflow-auto flex flex-col justify-between gap-6">
+      <div className="flex min-h-0 flex-1 flex-col justify-between gap-6 overflow-auto p-0 pt-6 lg:pl-6 lg:pt-0">
         
         <div className="space-y-5">
           {/* Header Card */}
@@ -95,7 +95,7 @@ export default function ExperienceApp() {
               commit verified
             </span>
             
-            <h3 className="text-sm font-bold text-zinc-100 flex items-center gap-2">
+            <h3 className="flex items-start gap-2 text-sm font-bold text-zinc-100">
               <Briefcase size={15} className="text-sys-accent" />
               <span>{activeExp.role} @ {activeExp.company}</span>
             </h3>

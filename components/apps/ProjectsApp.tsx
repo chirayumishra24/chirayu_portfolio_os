@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Folder, FileCode, Code2, ExternalLink, Activity, Target } from "lucide-react";
+import { Folder, FileCode, Code2, ExternalLink, Activity, Target, Layers, CheckCircle2, Lightbulb, Route } from "lucide-react";
 import { clsx } from "clsx";
 import { useSystemSound } from "../../hooks/useSystemSound";
 import { projects } from "../../data/portfolio";
@@ -105,6 +105,29 @@ export default function ProjectsApp() {
               
               <p className="text-xs leading-relaxed text-sys-text-secondary">{activeProject.description}</p>
               
+              {/* Case Study */}
+              <div className="space-y-2 p-3 rounded-lg bg-zinc-950/40 border border-sys-border text-[11px]">
+                <span className="flex items-center gap-1.5 font-bold uppercase text-zinc-400 text-[9px] tracking-wider select-none">
+                  <Target size={12} className="text-amber-500" /> Problem & Role
+                </span>
+                <p className="text-sys-text-secondary leading-normal">{activeProject.problem}</p>
+                <p className="text-zinc-300 leading-normal">
+                  <span className="font-bold text-sys-accent">Role:</span> {activeProject.role}
+                </p>
+              </div>
+
+              {/* Architecture */}
+              <div className="space-y-2 p-3 rounded-lg bg-zinc-950/40 border border-sys-border text-[11px]">
+                <span className="flex items-center gap-1.5 font-bold uppercase text-zinc-400 text-[9px] tracking-wider select-none">
+                  <Layers size={12} className="text-sys-accent" /> Architecture Notes
+                </span>
+                <ul className="space-y-1 text-sys-text-secondary leading-normal list-disc pl-4">
+                  {activeProject.architecture.map((note) => (
+                    <li key={note}>{note}</li>
+                  ))}
+                </ul>
+              </div>
+
               {/* Key Metrics */}
               <div className="space-y-2 p-3 rounded-lg bg-zinc-950/40 border border-sys-border text-[11px]">
                 <span className="flex items-center gap-1.5 font-bold uppercase text-zinc-400 text-[9px] tracking-wider select-none">
@@ -123,6 +146,42 @@ export default function ProjectsApp() {
                   <Target size={12} className="text-amber-500" /> Engineering Challenges
                 </span>
                 <p className="text-sys-text-secondary leading-normal">{activeProject.challenges}</p>
+              </div>
+
+              {/* Outcomes */}
+              <div className="space-y-2 p-3 rounded-lg bg-zinc-950/40 border border-sys-border text-[11px]">
+                <span className="flex items-center gap-1.5 font-bold uppercase text-zinc-400 text-[9px] tracking-wider select-none">
+                  <CheckCircle2 size={12} className="text-emerald-400" /> Outcomes
+                </span>
+                <ul className="space-y-1 text-sys-text-secondary leading-normal list-disc pl-4">
+                  {activeProject.outcomes.map((outcome) => (
+                    <li key={outcome}>{outcome}</li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Learnings */}
+              <div className="grid gap-3 text-[11px] md:grid-cols-2 lg:grid-cols-1">
+                <div className="space-y-2 rounded-lg border border-sys-border bg-zinc-950/40 p-3">
+                  <span className="flex items-center gap-1.5 font-bold uppercase text-zinc-400 text-[9px] tracking-wider select-none">
+                    <Lightbulb size={12} className="text-yellow-400" /> Learnings
+                  </span>
+                  <ul className="space-y-1 text-sys-text-secondary leading-normal list-disc pl-4">
+                    {activeProject.learnings.map((learning) => (
+                      <li key={learning}>{learning}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="space-y-2 rounded-lg border border-sys-border bg-zinc-950/40 p-3">
+                  <span className="flex items-center gap-1.5 font-bold uppercase text-zinc-400 text-[9px] tracking-wider select-none">
+                    <Route size={12} className="text-purple-400" /> Next Improvements
+                  </span>
+                  <ul className="space-y-1 text-sys-text-secondary leading-normal list-disc pl-4">
+                    {activeProject.nextSteps.map((step) => (
+                      <li key={step}>{step}</li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </div>
 

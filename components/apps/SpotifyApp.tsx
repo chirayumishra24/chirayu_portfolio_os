@@ -239,7 +239,7 @@ export default function SpotifyApp() {
   };
 
   return (
-    <div className="w-full h-full flex flex-col justify-between p-5 bg-zinc-950/70 text-zinc-300 font-sans select-none overflow-y-auto scrollbar-none">
+    <div className="flex h-full w-full flex-col justify-between overflow-y-auto bg-zinc-950/70 p-4 font-sans text-zinc-300 select-none scrollbar-none sm:p-5">
       
       {/* Local player audio source */}
       {!spotifyConnected && (
@@ -252,7 +252,7 @@ export default function SpotifyApp() {
       )}
 
       {/* Header bar */}
-      <div className="w-full flex items-center justify-between border-b border-sys-border pb-3 text-xs mb-3 shrink-0">
+      <div className="mb-3 flex w-full shrink-0 flex-col gap-3 border-b border-sys-border pb-3 text-xs sm:flex-row sm:items-center sm:justify-between">
         <span className="flex items-center gap-1.5 font-bold uppercase tracking-wider text-sys-accent">
           <Disc size={15} className="animate-spin-slow" /> Media Room
         </span>
@@ -261,13 +261,13 @@ export default function SpotifyApp() {
           <div className="flex items-center gap-1.5">
             <button
               onClick={handleConnectSpotify}
-              className="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-700 hover:border-sys-accent text-[9px] font-bold text-zinc-400"
+              className="touch-target rounded border border-zinc-700 bg-zinc-900 px-2 py-0.5 text-[9px] font-bold text-zinc-400 hover:border-sys-accent sm:min-h-0 sm:min-w-0"
             >
               Config Link
             </button>
             <button
               onClick={handleDisconnectSpotify}
-              className="px-2 py-0.5 rounded bg-emerald-950 border border-emerald-500 text-[9px] font-bold text-emerald-400"
+              className="touch-target rounded border border-emerald-500 bg-emerald-950 px-2 py-0.5 text-[9px] font-bold text-emerald-400 sm:min-h-0 sm:min-w-0"
             >
               Connected
             </button>
@@ -275,7 +275,7 @@ export default function SpotifyApp() {
         ) : (
           <button
             onClick={handleConnectSpotify}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold border bg-zinc-900 border-zinc-700 hover:border-sys-accent text-zinc-400"
+            className="touch-target flex items-center justify-center gap-1 rounded-full border border-zinc-700 bg-zinc-900 px-2.5 py-1 text-[10px] font-bold text-zinc-400 hover:border-sys-accent sm:min-h-0 sm:min-w-0"
           >
             <Link size={10} />
             <span>Connect Spotify</span>
@@ -300,23 +300,23 @@ export default function SpotifyApp() {
               placeholder="https://open.spotify.com/playlist/..."
               value={inputUrl}
               onChange={(e) => setInputUrl(e.target.value)}
-              className="w-full px-3 py-2 bg-zinc-900 border border-sys-border rounded-lg text-xs text-zinc-100 placeholder-zinc-600 focus:outline-none focus:border-sys-accent"
+              className="touch-target w-full rounded-lg border border-sys-border bg-zinc-900 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-600 focus:border-sys-accent focus:outline-none sm:min-h-0"
             />
           </div>
 
           {/* Preset options */}
           <div className="space-y-1.5 select-none">
             <span className="text-[9px] uppercase font-bold text-zinc-500 tracking-wider block">Quick Presets</span>
-            <div className="grid grid-cols-2 gap-1.5 text-[9px] font-semibold">
+            <div className="grid grid-cols-1 gap-1.5 text-[9px] font-semibold min-[380px]:grid-cols-2">
               <button
                 onClick={() => { setInputUrl("https://open.spotify.com/playlist/37i9dQZF1DWWQRwui0ExPn"); playSound("click"); }}
-                className="py-1 bg-zinc-900 hover:bg-zinc-800 border border-sys-border rounded text-center text-zinc-300"
+                className="touch-target rounded border border-sys-border bg-zinc-900 py-1 text-center text-zinc-300 hover:bg-zinc-800 sm:min-h-0"
               >
                 ☕ Lofi Beats
               </button>
               <button
                 onClick={() => { setInputUrl("https://open.spotify.com/playlist/37i9dQZF1DXdLTE7587tRX"); playSound("click"); }}
-                className="py-1 bg-zinc-900 hover:bg-zinc-800 border border-sys-border rounded text-center text-zinc-300"
+                className="touch-target rounded border border-sys-border bg-zinc-900 py-1 text-center text-zinc-300 hover:bg-zinc-800 sm:min-h-0"
               >
                 🌌 Synthwave Retro
               </button>
@@ -324,16 +324,16 @@ export default function SpotifyApp() {
           </div>
 
           {/* Action buttons */}
-          <div className="flex items-center gap-2 pt-2 select-none">
+          <div className="flex flex-col gap-2 pt-2 select-none min-[380px]:flex-row min-[380px]:items-center">
             <button
               onClick={() => { playSound("click"); setShowConfig(false); }}
-              className="flex-1 py-1.5 rounded bg-zinc-900 hover:bg-zinc-800 text-[10px] font-bold text-zinc-400 border border-sys-border"
+              className="touch-target flex-1 rounded border border-sys-border bg-zinc-900 py-1.5 text-[10px] font-bold text-zinc-400 hover:bg-zinc-800 sm:min-h-0"
             >
               Cancel
             </button>
             <button
               onClick={() => handleSaveSpotifyUrl(inputUrl)}
-              className="flex-1 py-1.5 rounded bg-sys-accent hover:bg-sys-accent-hover text-[10px] font-bold text-zinc-950"
+              className="touch-target flex-1 rounded bg-sys-accent py-1.5 text-[10px] font-bold text-zinc-950 hover:bg-sys-accent-hover sm:min-h-0"
             >
               Connect Player
             </button>
@@ -341,7 +341,7 @@ export default function SpotifyApp() {
         </div>
       ) : spotifyConnected ? (
         // Iframe Embed Spotify Player
-        <div className="flex-1 flex flex-col justify-center py-2">
+        <div className="flex min-h-0 flex-1 flex-col justify-center py-2">
           <iframe 
             src={getEmbedUrl(playlistUrl)} 
             width="100%" 
@@ -350,14 +350,14 @@ export default function SpotifyApp() {
             allowFullScreen 
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
             loading="lazy"
-            className="rounded-xl border border-sys-border shadow-2xl"
+            className="h-[min(340px,55dvh)] min-h-[260px] rounded-xl border border-sys-border shadow-2xl"
           />
         </div>
       ) : (
         // Fallback: Local Audio Player
         <>
           {/* Album Cover & Track Details */}
-          <div className="flex-1 flex flex-col items-center justify-center space-y-4 my-2">
+          <div className="my-2 flex min-h-0 flex-1 flex-col items-center justify-center space-y-4">
             <div className={clsx(
               "w-28 h-28 rounded-2xl flex items-center justify-center shadow-2xl relative border border-sys-border overflow-hidden shrink-0",
               currentTrack.cover
@@ -378,27 +378,27 @@ export default function SpotifyApp() {
           </div>
 
           {/* Playback Controls */}
-          <div className="flex items-center justify-center gap-6 mb-3 shrink-0">
-            <button onClick={handleBack} className="p-2 rounded-full hover:bg-zinc-900 hover:text-sys-accent transition-colors">
+          <div className="mb-3 flex shrink-0 items-center justify-center gap-6">
+            <button onClick={handleBack} className="touch-target rounded-full p-2 transition-colors hover:bg-zinc-900 hover:text-sys-accent sm:min-h-0 sm:min-w-0">
               <SkipBack size={16} />
             </button>
             <button 
               onClick={handlePlayPause} 
-              className="w-10 h-10 rounded-full bg-sys-accent hover:bg-sys-accent-hover text-zinc-950 flex items-center justify-center transition-all shadow-lg hover:scale-105 active:scale-95"
+              className="touch-target flex h-10 w-10 items-center justify-center rounded-full bg-sys-accent text-zinc-950 shadow-lg transition-all hover:scale-105 hover:bg-sys-accent-hover active:scale-95"
             >
               {isPlaying ? <Pause size={16} fill="currentColor" /> : <Play size={16} fill="currentColor" className="ml-0.5" />}
             </button>
-            <button onClick={handleNext} className="p-2 rounded-full hover:bg-zinc-900 hover:text-sys-accent transition-colors">
+            <button onClick={handleNext} className="touch-target rounded-full p-2 transition-colors hover:bg-zinc-900 hover:text-sys-accent sm:min-h-0 sm:min-w-0">
               <SkipForward size={16} />
             </button>
           </div>
 
           {/* Playlists presets */}
-          <div className="w-full grid grid-cols-3 gap-2 border-t border-sys-border pt-3 text-[9px] font-bold uppercase tracking-wider text-center shrink-0">
+          <div className="grid w-full shrink-0 grid-cols-1 gap-2 border-t border-sys-border pt-3 text-center text-[9px] font-bold uppercase tracking-wider min-[380px]:grid-cols-3">
             <button
               onClick={() => handlePlaylistSelect("lofi")}
               className={clsx(
-                "py-1 rounded transition-colors",
+                "touch-target rounded py-1 transition-colors sm:min-h-0",
                 activePlaylist === "lofi" ? "bg-sys-accent/15 text-sys-accent border border-sys-accent/20" : "bg-zinc-900/40 hover:bg-zinc-900 text-zinc-400"
               )}
             >
@@ -407,7 +407,7 @@ export default function SpotifyApp() {
             <button
               onClick={() => handlePlaylistSelect("synthwave")}
               className={clsx(
-                "py-1 rounded transition-colors",
+                "touch-target rounded py-1 transition-colors sm:min-h-0",
                 activePlaylist === "synthwave" ? "bg-sys-accent/15 text-sys-accent border border-sys-accent/20" : "bg-zinc-900/40 hover:bg-zinc-900 text-zinc-400"
               )}
             >
@@ -416,7 +416,7 @@ export default function SpotifyApp() {
             <button
               onClick={() => handlePlaylistSelect("nature")}
               className={clsx(
-                "py-1 rounded transition-colors",
+                "touch-target rounded py-1 transition-colors sm:min-h-0",
                 activePlaylist === "nature" ? "bg-sys-accent/15 text-sys-accent border border-sys-accent/20" : "bg-zinc-900/40 hover:bg-zinc-900 text-zinc-400"
               )}
             >

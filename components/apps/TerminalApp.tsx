@@ -215,18 +215,18 @@ export default function TerminalApp() {
 
   if (matrixMode) {
     return (
-      <div className="w-full h-full bg-black text-green-500 font-mono p-4 flex flex-col items-center justify-center overflow-hidden relative">
+      <div className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden bg-black p-4 font-mono text-green-500">
         <div className="absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[size:100%_4px,3px_100%] pointer-events-none" />
         <div className="text-center space-y-4 z-10">
-          <h2 className="text-2xl font-bold animate-pulse">MATRIX CORE ONLINE</h2>
+          <h2 className="text-center text-xl font-bold animate-pulse sm:text-2xl">MATRIX CORE ONLINE</h2>
           <p className="text-xs text-green-700">Digital rain simulation active... Resuming terminal in 8s.</p>
-          <div className="w-64 h-1.5 bg-zinc-950 rounded-full overflow-hidden border border-green-900">
+          <div className="mx-auto h-1.5 w-full max-w-64 overflow-hidden rounded-full border border-green-900 bg-zinc-950">
             <div className="h-full bg-green-500 rounded-full animate-[progress_8s_linear_infinite]" style={{ width: "100%" }} />
           </div>
         </div>
         
         {/* Animated Digital Rain columns */}
-        <div className="absolute inset-0 flex justify-between px-10 opacity-30 select-none pointer-events-none text-xs leading-none overflow-hidden mask-gradient">
+        <div className="absolute inset-0 flex justify-between overflow-hidden px-4 text-xs leading-none opacity-30 select-none pointer-events-none mask-gradient sm:px-10">
           {Array.from({ length: 15 }).map((_, i) => (
             <div key={i} className="animate-[matrix-fall_5s_linear_infinite] whitespace-pre" style={{ animationDelay: `${i * 0.3}s` }}>
               {Array.from({ length: 40 }).map(() => String.fromCharCode(33 + Math.floor(Math.random() * 93))).join("\n")}
@@ -238,8 +238,8 @@ export default function TerminalApp() {
   }
 
   return (
-    <div className="w-full h-full bg-sys-terminal text-sys-terminal-fg font-mono p-4 flex flex-col overflow-y-auto cursor-text select-text h-[calc(100% - 10px)]" onClick={() => document.getElementById("terminal-input")?.focus()}>
-      <div className="flex-1 space-y-1 text-xs">
+    <div className="flex h-full w-full cursor-text flex-col overflow-auto bg-sys-terminal p-3 font-mono text-sys-terminal-fg select-text sm:p-4" onClick={() => document.getElementById("terminal-input")?.focus()}>
+      <div className="min-h-0 flex-1 space-y-1 text-[11px] sm:text-xs">
         {terminalLogs.map((log, idx) => (
           <div 
             key={idx} 
@@ -258,8 +258,8 @@ export default function TerminalApp() {
       </div>
 
       {/* Input Prompt */}
-      <div className="flex items-center gap-1.5 text-xs mt-3 select-none">
-        <span className="text-green-400 font-bold shrink-0">chirayu@portfolio:~$</span>
+      <div className="mt-3 flex items-center gap-1.5 text-[11px] select-none sm:text-xs">
+        <span className="shrink-0 font-bold text-green-400">chirayu@portfolio:~$</span>
         <input
           id="terminal-input"
           type="text"
@@ -268,7 +268,7 @@ export default function TerminalApp() {
           onKeyDown={handleKeyDown}
           autoComplete="off"
           autoFocus
-          className="flex-1 bg-transparent text-zinc-100 focus:outline-none caret-sys-accent select-text"
+          className="min-w-0 flex-1 bg-transparent text-zinc-100 caret-sys-accent focus:outline-none select-text"
         />
       </div>
     </div>

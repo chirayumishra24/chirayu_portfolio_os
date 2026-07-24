@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import { useOSStore } from "../store/osStore";
 import { useSystemSound } from "../hooks/useSystemSound";
 import { ShieldCheck, Wifi, Battery, Command, Sparkles } from "lucide-react";
@@ -14,21 +15,28 @@ import ContextMenu from "../components/desktop/ContextMenu";
 import CommandPalette from "../components/desktop/CommandPalette";
 import NotificationCenter, { NotificationToasts } from "../components/desktop/NotificationCenter";
 import AIChatAssistant from "../components/desktop/AIChatAssistant";
+import RecruiterModePanel from "../components/desktop/RecruiterModePanel";
 
-// Applications
-import AboutApp from "../components/apps/AboutApp";
-import ProjectsApp from "../components/apps/ProjectsApp";
-import SkillsApp from "../components/apps/SkillsApp";
-import ExperienceApp from "../components/apps/ExperienceApp";
-import ResumeApp from "../components/apps/ResumeApp";
-import GithubApp from "../components/apps/GithubApp";
-import TerminalApp from "../components/apps/TerminalApp";
-import PlaygroundApp from "../components/apps/PlaygroundApp";
-import ContactApp from "../components/apps/ContactApp";
-import SpotifyApp from "../components/apps/SpotifyApp";
-import GamesApp from "../components/apps/GamesApp";
-import SettingsApp from "../components/apps/SettingsApp";
-import FileManagerApp from "../components/apps/FileManagerApp";
+const AppLoading = () => (
+  <div className="flex h-full w-full items-center justify-center bg-zinc-950/40 p-6 text-center font-mono text-xs text-sys-text-secondary">
+    Loading application...
+  </div>
+);
+
+// Applications are split out of the initial desktop shell bundle.
+const AboutApp = dynamic(() => import("../components/apps/AboutApp"), { loading: AppLoading });
+const ProjectsApp = dynamic(() => import("../components/apps/ProjectsApp"), { loading: AppLoading });
+const SkillsApp = dynamic(() => import("../components/apps/SkillsApp"), { loading: AppLoading });
+const ExperienceApp = dynamic(() => import("../components/apps/ExperienceApp"), { loading: AppLoading });
+const ResumeApp = dynamic(() => import("../components/apps/ResumeApp"), { loading: AppLoading });
+const GithubApp = dynamic(() => import("../components/apps/GithubApp"), { loading: AppLoading });
+const TerminalApp = dynamic(() => import("../components/apps/TerminalApp"), { loading: AppLoading });
+const PlaygroundApp = dynamic(() => import("../components/apps/PlaygroundApp"), { loading: AppLoading });
+const ContactApp = dynamic(() => import("../components/apps/ContactApp"), { loading: AppLoading });
+const SpotifyApp = dynamic(() => import("../components/apps/SpotifyApp"), { loading: AppLoading });
+const GamesApp = dynamic(() => import("../components/apps/GamesApp"), { loading: AppLoading });
+const SettingsApp = dynamic(() => import("../components/apps/SettingsApp"), { loading: AppLoading });
+const FileManagerApp = dynamic(() => import("../components/apps/FileManagerApp"), { loading: AppLoading });
 
 interface BatteryInfo extends EventTarget {
   level: number;
@@ -69,7 +77,7 @@ const ACHIEVEMENT_DESCRIPTIONS: Record<string, string> = {
 };
 
 export default function Home() {
-  const { bootState, theme, achievements, commandPaletteOpen, setCommandPaletteOpen } = useOSStore();
+  const { bootState, theme, achievements, commandPaletteOpen, setCommandPaletteOpen, activeWindowId, closeWindow } = useOSStore();
   const { playSound } = useSystemSound();
   const [mounted, setMounted] = useState(false);
   
@@ -142,6 +150,23 @@ export default function Home() {
     }
   }, [achievements, unlockedCount, mounted, playSound]);
 
+  useEffect(() => {
+    if (!mounted) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape" || commandPaletteOpen || !activeWindowId) return;
+      const target = event.target as HTMLElement | null;
+      if (target && ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)) return;
+      if (document.querySelector('[role="dialog"]')) return;
+      if (document.querySelector("[data-recruiter-panel='true']")) return;
+      closeWindow(activeWindowId);
+      playSound("click");
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [activeWindowId, closeWindow, commandPaletteOpen, mounted, playSound]);
+
   if (!mounted) {
     return (
       <div className="fixed inset-0 bg-black flex items-center justify-center text-zinc-500 font-mono text-xs select-none">
@@ -157,7 +182,7 @@ export default function Home() {
 
   // 2. Desktop OS Environment
   return (
-    <div className="relative h-[100dvh] w-screen max-w-screen overflow-hidden select-none select-text">
+    <div className="relative h-[100dvh] w-screen max-w-[100vw] overflow-hidden select-none select-text">
       {/* Dynamic Desktop Wallpaper Background Overlay */}
       <div className="absolute inset-0 bg-gradient-to-tr opacity-25 mix-blend-overlay pointer-events-none" />
 
@@ -175,6 +200,7 @@ export default function Home() {
           
           <div className="hidden md:flex items-center gap-4 text-sys-text-secondary">
             <button onClick={() => { playSound("click"); useOSStore.getState().openWindow("about"); }} className="hover:text-sys-text-primary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sys-accent rounded">About</button>
+            <button onClick={() => { playSound("click"); window.dispatchEvent(new Event("open-recruiter-mode")); }} className="hover:text-sys-text-primary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sys-accent rounded">Recruiter Mode</button>
             <button onClick={() => { playSound("click"); setCommandPaletteOpen(true); }} className="hover:text-sys-text-primary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sys-accent rounded">Find</button>
             <button onClick={() => { playSound("click"); useOSStore.getState().openWindow("settings"); }} className="hover:text-sys-text-primary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sys-accent rounded">Preferences</button>
             <button onClick={() => { playSound("click"); useOSStore.getState().openWindow("terminal"); }} className="hover:text-sys-text-primary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sys-accent rounded">Developer Shell</button>
@@ -219,8 +245,18 @@ export default function Home() {
         </div>
       </div>
 
+      <button
+        type="button"
+        onClick={() => { playSound("click"); window.dispatchEvent(new Event("open-recruiter-mode")); }}
+        className="fixed left-3 top-[calc(var(--topbar-height)+0.5rem)] z-[55] rounded-full border border-sys-border bg-zinc-950/80 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-sys-accent shadow-lg backdrop-blur-xl transition-colors hover:border-sys-border-active sm:hidden"
+      >
+        Recruiter Mode
+      </button>
+
       {/* Desktop Grid Icons */}
       <DesktopGrid />
+
+      <RecruiterModePanel />
 
       {/* Window Manager Workspace */}
       <div className="pointer-events-none absolute inset-0 h-full w-full overflow-hidden pt-[var(--topbar-height)] pb-[calc(var(--dock-height)+var(--safe-bottom))]">

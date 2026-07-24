@@ -100,7 +100,14 @@ export default function CommandPalette() {
     }, 300);
   };
 
+  const handleRecruiterMode = () => {
+    setCommandPaletteOpen(false);
+    playSound("click");
+    window.dispatchEvent(new Event("open-recruiter-mode"));
+  };
+
   const commandsList: CommandItem[] = [
+    { id: "quick-recruiter", category: "Quick Actions", label: "Open Recruiter Mode summary", action: handleRecruiterMode },
     { id: "app-about", category: "Applications", label: "Open About Me (System Info)", action: () => handleLaunchApp("about") },
     { id: "app-projects", category: "Applications", label: "Open Projects Explorer (VS Code)", action: () => handleLaunchApp("projects") },
     { id: "app-skills", category: "Applications", label: "Open Skills Tree (Brain Graph)", action: () => handleLaunchApp("skills") },
@@ -145,9 +152,11 @@ export default function CommandPalette() {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "ArrowDown") {
       e.preventDefault();
+      if (filteredCommands.length === 0) return;
       setSelectedIndex((prev) => (prev + 1) % filteredCommands.length);
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
+      if (filteredCommands.length === 0) return;
       setSelectedIndex((prev) => (prev - 1 + filteredCommands.length) % filteredCommands.length);
     } else if (e.key === "Enter") {
       e.preventDefault();
@@ -158,13 +167,16 @@ export default function CommandPalette() {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999999] flex items-start justify-center pt-[15vh] px-4 font-sans select-none">
+    <div className="fixed inset-0 z-[999999] flex items-start justify-center bg-black/60 px-2 pt-14 font-sans backdrop-blur-sm select-none sm:px-4 sm:pt-[12vh]">
       <div 
         ref={containerRef}
-        className="w-full max-w-xl rounded-2xl bg-zinc-950/90 border border-sys-accent/30 shadow-2xl overflow-hidden flex flex-col max-h-[50vh] animate-in zoom-in-95 duration-150"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Command palette"
+        className="flex max-h-[80dvh] w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-sys-accent/30 bg-zinc-950/90 shadow-2xl animate-in zoom-in-95 duration-150 sm:max-h-[70dvh]"
       >
         {/* Input Bar */}
-        <div className="h-14 px-4 flex items-center gap-3 border-b border-sys-border bg-zinc-950/40">
+        <div className="flex min-h-14 items-center gap-3 border-b border-sys-border bg-zinc-950/40 px-3 sm:px-4">
           <Search size={18} className="text-sys-text-secondary shrink-0" />
           <input
             ref={inputRef}
@@ -173,13 +185,13 @@ export default function CommandPalette() {
             value={search}
             onChange={(e) => { setSearch(e.target.value); setSelectedIndex(0); }}
             onKeyDown={handleKeyDown}
-            className="flex-1 bg-transparent text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none"
+            className="min-w-0 flex-1 bg-transparent text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none"
           />
-          <kbd className="text-[10px] bg-zinc-900 border border-zinc-800 text-zinc-400 px-1.5 py-0.5 rounded shadow">ESC</kbd>
+          <kbd className="hidden rounded border border-zinc-800 bg-zinc-900 px-1.5 py-0.5 text-[10px] text-zinc-400 shadow sm:inline">ESC</kbd>
         </div>
 
         {/* Results Area */}
-        <div className="flex-1 overflow-y-auto p-2 space-y-1">
+        <div className="min-h-0 flex-1 overflow-y-auto p-2 space-y-1 overscroll-contain">
           {filteredCommands.length > 0 ? (
             filteredCommands.map((cmd, idx) => {
               const isSelected = idx === selectedIndex;
@@ -189,24 +201,26 @@ export default function CommandPalette() {
                   onClick={() => cmd.action()}
                   onMouseEnter={() => setSelectedIndex(idx)}
                   className={clsx(
-                    "w-full px-3.5 py-2.5 rounded-lg flex items-center justify-between text-left transition-all duration-100",
+                    "w-full rounded-lg px-3.5 py-3 text-left transition-all duration-100 sm:py-2.5",
                     isSelected ? "bg-sys-accent/20 text-sys-accent shadow-sm" : "text-zinc-400 hover:bg-zinc-900/40"
                   )}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex w-full min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex min-w-0 items-start gap-3 sm:items-center">
                     <Terminal size={14} className={clsx(isSelected ? "text-sys-accent" : "text-zinc-600")} />
-                    <span className="text-xs font-medium">{cmd.label}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className={clsx(
-                      "text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded font-bold border",
-                      isSelected ? "bg-sys-accent/15 border-sys-accent/30 text-sys-accent" : "bg-zinc-900/50 border-zinc-800/80 text-zinc-500"
-                    )}>
-                      {cmd.category}
-                    </span>
-                    {isSelected && (
-                      <CornerDownLeft size={10} className="text-sys-accent animate-pulse" />
-                    )}
+                      <span className="text-xs font-medium leading-snug">{cmd.label}</span>
+                    </div>
+                    <div className="flex items-center gap-2 pl-7 sm:pl-0">
+                      <span className={clsx(
+                        "text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded font-bold border",
+                        isSelected ? "bg-sys-accent/15 border-sys-accent/30 text-sys-accent" : "bg-zinc-900/50 border-zinc-800/80 text-zinc-500"
+                      )}>
+                        {cmd.category}
+                      </span>
+                      {isSelected && (
+                        <CornerDownLeft size={10} className="text-sys-accent animate-pulse" />
+                      )}
+                    </div>
                   </div>
                 </button>
               );
@@ -219,12 +233,12 @@ export default function CommandPalette() {
         </div>
 
         {/* Footer Navigation Hints */}
-        <div className="h-9 px-4 border-t border-sys-border bg-zinc-950/60 flex items-center justify-between text-[10px] text-zinc-500">
-          <div className="flex items-center gap-4">
+        <div className="flex min-h-9 items-center justify-between gap-3 border-t border-sys-border bg-zinc-950/60 px-3 py-2 text-[10px] text-zinc-500 sm:px-4 sm:py-0">
+          <div className="hidden items-center gap-4 sm:flex">
             <span className="flex items-center gap-1"><ArrowUp size={10} /><ArrowDown size={10} /> Navigate</span>
             <span className="flex items-center gap-1"><CornerDownLeft size={10} /> Execute</span>
           </div>
-          <span className="font-semibold text-sys-accent/80">Raycast Quick Menu</span>
+          <span className="font-semibold text-sys-accent/80">Quick Menu</span>
         </div>
       </div>
     </div>

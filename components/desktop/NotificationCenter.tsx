@@ -60,7 +60,7 @@ export function NotificationToasts() {
   }, [notifications]);
 
   return (
-    <div className="fixed top-14 right-4 z-[99998] flex flex-col gap-2 pointer-events-none max-w-sm">
+    <div className="fixed left-2 right-2 top-[calc(var(--topbar-height)+0.5rem)] z-[99998] flex max-w-sm flex-col gap-2 pointer-events-none sm:left-auto sm:right-4">
       <AnimatePresence>
         {visibleToasts.map((toast) => (
           <motion.div
@@ -103,7 +103,8 @@ export default function NotificationCenter() {
       {/* Bell Button */}
       <button
         onClick={handleToggle}
-        className="relative flex items-center gap-1 hover:text-sys-text-primary transition-colors"
+        aria-label="Open notifications"
+        className="touch-target relative flex items-center justify-center gap-1 transition-colors hover:text-sys-text-primary sm:min-h-0 sm:min-w-0"
       >
         <Bell size={13} className={unreadCount > 0 ? "text-sys-accent" : ""} />
         {unreadCount > 0 && (
@@ -125,7 +126,7 @@ export default function NotificationCenter() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.95 }}
               transition={{ type: "spring", stiffness: 500, damping: 35 }}
-              className="absolute right-0 top-8 w-80 max-h-96 rounded-xl border border-sys-border bg-zinc-950/95 backdrop-blur-2xl shadow-2xl z-[9991] overflow-hidden"
+              className="fixed left-2 right-2 top-[calc(var(--topbar-height)+0.5rem)] z-[9991] max-h-[80dvh] overflow-hidden rounded-xl border border-sys-border bg-zinc-950/95 shadow-2xl backdrop-blur-2xl sm:absolute sm:left-auto sm:right-0 sm:top-8 sm:w-80 sm:max-h-96"
             >
               {/* Header */}
               <div className="flex items-center justify-between px-4 py-3 border-b border-sys-border">
@@ -140,13 +141,14 @@ export default function NotificationCenter() {
                     </button>
                   )}
                   <button onClick={() => setOpen(false)} className="text-zinc-500 hover:text-zinc-300">
+                    <span className="sr-only">Close notifications</span>
                     <X size={14} />
                   </button>
                 </div>
               </div>
 
               {/* Notification List */}
-              <div className="overflow-y-auto max-h-72 scrollbar-none">
+              <div className="max-h-[calc(80dvh-3rem)] overflow-y-auto scrollbar-none overscroll-contain sm:max-h-72">
                 {notifications.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-12 text-zinc-500">
                     <Bell size={28} className="mb-3 opacity-30" />
