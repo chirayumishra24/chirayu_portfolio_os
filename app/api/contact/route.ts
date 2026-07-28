@@ -19,9 +19,16 @@ export async function POST(req: Request) {
   try {
     const { name, email, subject, message } = await req.json();
 
-    if (!name || !email || !subject || !message) {
-      return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (
+      typeof name !== "string" || !name.trim() ||
+      typeof email !== "string" || !emailRegex.test(email.trim()) ||
+      typeof subject !== "string" || !subject.trim() ||
+      typeof message !== "string" || !message.trim()
+    ) {
+      return NextResponse.json({ message: "Invalid or missing required fields. Please provide a valid email and non-empty content." }, { status: 400 });
     }
+
 
     // 1. Record message in Local SQLite Database via Prisma
     const savedMessage = await prisma.contactMessage.create({

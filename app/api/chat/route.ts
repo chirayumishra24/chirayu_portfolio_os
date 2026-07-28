@@ -3,12 +3,10 @@ import { aiAssistantContext, profile } from "../../../data/portfolio";
 
 export const dynamic = "force-dynamic";
 
-interface GeminiResponse {
-  candidates?: Array<{
-    content?: {
-      parts?: Array<{
-        text?: string;
-      }>;
+interface GroqResponse {
+  choices?: Array<{
+    message?: {
+      content?: string;
     };
   }>;
 }
@@ -21,54 +19,45 @@ export async function POST(req: Request) {
   try {
     const { message } = await req.json();
 
-    if (!message || typeof message !== "string") {
+    if (!message || typeof message !== "string" || !message.trim()) {
       return NextResponse.json({ reply: "Please send a valid message." }, { status: 400 });
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
+    const apiKey = process.env.GROQ_API_KEY;
 
     if (!apiKey) {
       return NextResponse.json({
-        reply: `ChirayuAI is currently offline because the API key is not configured. You can contact Chirayu directly at ${profile.email}.`
+        reply: `ChirayuAI is currently offline because the GROQ_API_KEY is not configured in environment variables. You can contact Chirayu directly at ${profile.email}.`
       });
     }
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [
-            { role: "user", parts: [{ text: SYSTEM_CONTEXT }] },
-            { role: "model", parts: [{ text: "Understood! I'm ChirayuAI, ready to answer questions about Chirayu Mishra. Ask me anything!" }] },
-            { role: "user", parts: [{ text: message }] }
-          ],
-          generationConfig: {
-            temperature: 0.7,
-            maxOutputTokens: 256,
-            topP: 0.9,
-          },
-          safetySettings: [
-            { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
-            { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
-            { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
-            { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
-          ]
-        })
-      }
-    );
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "llama-3.3-70b-versatile",
+        messages: [
+          { role: "system", content: SYSTEM_CONTEXT },
+          { role: "user", content: message.trim() }
+        ],
+        temperature: 0.7,
+        max_tokens: 256
+      })
+    });
 
     if (!response.ok) {
       const errorData = await response.text();
-      console.error("Gemini API error:", response.status, errorData);
+      console.error("Groq API error:", response.status, errorData);
       return NextResponse.json({
-        reply: `ChirayuAI encountered an issue. Try again in a moment, or contact Chirayu at ${profile.email}.`
+        reply: `ChirayuAI encountered an issue communicating with Groq API. Try again in a moment, or contact Chirayu at ${profile.email}.`
       });
     }
 
-    const data = await response.json() as GeminiResponse;
-    const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text || "I couldn't generate a response. Try asking something else!";
+    const data = (await response.json()) as GroqResponse;
+    const reply = data?.choices?.[0]?.message?.content || "I couldn't generate a response. Try asking something else!";
 
     return NextResponse.json({ reply });
   } catch (error: unknown) {
@@ -78,3 +67,4 @@ export async function POST(req: Request) {
     });
   }
 }
+
