@@ -14,7 +14,8 @@ export type AppId =
   | "spotify"
   | "games"
   | "settings"
-  | "filemanager";
+  | "filemanager"
+  | "deployments";
 
 export interface WindowState {
   id: AppId;
@@ -112,6 +113,7 @@ const initialWindows = (): Record<AppId, WindowState> => ({
   games: { id: "games", title: "Arcade Center", isOpen: false, isMinimized: false, isMaximized: false, x: 350, y: 90, width: 780, height: 540, zIndex: 1 },
   settings: { id: "settings", title: "System Preferences", isOpen: false, isMinimized: false, isMaximized: false, x: 400, y: 250, width: 600, height: 450, zIndex: 1 },
   filemanager: { id: "filemanager", title: "File Manager", isOpen: false, isMinimized: false, isMaximized: false, x: 300, y: 70, width: 850, height: 550, zIndex: 1 },
+  deployments: { id: "deployments", title: "Live Deployments Showcase", isOpen: false, isMinimized: false, isMaximized: false, x: 280, y: 60, width: 960, height: 620, zIndex: 1 },
 });
 
 export const useOSStore = create<OSState>()(

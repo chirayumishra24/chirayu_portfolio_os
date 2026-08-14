@@ -37,6 +37,7 @@ const SpotifyApp = dynamic(() => import("../components/apps/SpotifyApp"), { load
 const GamesApp = dynamic(() => import("../components/apps/GamesApp"), { loading: AppLoading });
 const SettingsApp = dynamic(() => import("../components/apps/SettingsApp"), { loading: AppLoading });
 const FileManagerApp = dynamic(() => import("../components/apps/FileManagerApp"), { loading: AppLoading });
+const DeploymentsApp = dynamic(() => import("../components/apps/DeploymentsApp"), { loading: AppLoading });
 
 interface BatteryInfo extends EventTarget {
   level: number;
@@ -324,6 +325,11 @@ export default function Home() {
           {/* File Manager App */}
           <WindowFrame id="filemanager">
             <FileManagerApp />
+          </WindowFrame>
+
+          {/* Deployments Gallery App */}
+          <WindowFrame id="deployments">
+            <DeploymentsApp />
           </WindowFrame>
         </div>
       </div>

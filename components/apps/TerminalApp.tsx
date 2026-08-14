@@ -129,9 +129,9 @@ export default function TerminalApp() {
 
       case "open":
         if (!commandArg) {
-          newLogs.push({ type: "error", text: "Usage: open [about | projects | skills | experience | resume | github | playground | contact | spotify | games | settings | filemanager]" });
+          newLogs.push({ type: "error", text: "Usage: open [about | projects | skills | experience | resume | github | playground | contact | spotify | games | settings | filemanager | deployments]" });
         } else {
-          const validApps: AppId[] = ["about", "projects", "skills", "experience", "resume", "github", "playground", "contact", "spotify", "games", "settings", "filemanager"];
+          const validApps: AppId[] = ["about", "projects", "skills", "experience", "resume", "github", "playground", "contact", "spotify", "games", "settings", "filemanager", "deployments"];
           if (validApps.includes(commandArg as AppId)) {
             openWindow(commandArg as AppId);
             playSound("success");

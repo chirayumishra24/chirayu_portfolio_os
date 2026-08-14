@@ -8,7 +8,7 @@ import {
   User, Folder, Brain, GitBranch, FileText, Code2, 
   Terminal, Play, Mail, Music, Gamepad2, Settings, 
   Volume2, VolumeX, Sun, Clock, Power, ShieldCheck, FolderOpen,
-  LayoutGrid, X, Search
+  LayoutGrid, X, Search, Globe
 } from "lucide-react";
 import { clsx } from "clsx";
 
@@ -48,6 +48,7 @@ export default function Taskbar() {
     { id: "terminal", label: "Terminal", icon: <Terminal size={20} />, category: "Developer" },
     { id: "playground", label: "JS Sandbox", icon: <Play size={20} />, category: "Developer" },
     { id: "filemanager", label: "File Manager", icon: <FolderOpen size={20} />, category: "Developer" },
+    { id: "deployments", label: "Vercel Deployments", icon: <Globe size={20} />, category: "Work" },
     { id: "contact", label: "Mail Compose", icon: <Mail size={20} />, category: "Connect" },
     { id: "spotify", label: "Music Player", icon: <Music size={20} />, category: "Media" },
     { id: "games", label: "Arcade Games", icon: <Gamepad2 size={20} />, category: "Media" },

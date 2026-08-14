@@ -5,7 +5,7 @@ import { AppId, useOSStore } from "../../store/osStore";
 import { useSystemSound } from "../../hooks/useSystemSound";
 import { 
   User, Folder, Brain, GitBranch, FileText, Code2, 
-  Terminal, Play, Mail, Music, Gamepad2, Settings, FolderOpen 
+  Terminal, Play, Mail, Music, Gamepad2, Settings, FolderOpen, Globe 
 } from "lucide-react";
 import { clsx } from "clsx";
 
@@ -27,6 +27,7 @@ export default function DesktopGrid() {
     { id: "games", label: "Arcade Games", icon: <Gamepad2 size={24} />, color: "from-blue-600 to-violet-600" },
     { id: "settings", label: "Preferences", icon: <Settings size={24} />, color: "from-gray-500 to-stone-600" },
     { id: "filemanager", label: "File Manager", icon: <FolderOpen size={24} />, color: "from-sky-500 to-blue-600" },
+    { id: "deployments", label: "Vercel Apps", icon: <Globe size={24} />, color: "from-teal-500 to-emerald-600" },
   ];
 
   const handleLaunch = (id: AppId) => {
