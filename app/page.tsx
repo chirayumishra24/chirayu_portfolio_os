@@ -38,6 +38,7 @@ const GamesApp = dynamic(() => import("../components/apps/GamesApp"), { loading:
 const SettingsApp = dynamic(() => import("../components/apps/SettingsApp"), { loading: AppLoading });
 const FileManagerApp = dynamic(() => import("../components/apps/FileManagerApp"), { loading: AppLoading });
 const DeploymentsApp = dynamic(() => import("../components/apps/DeploymentsApp"), { loading: AppLoading });
+const WallpaperCanvas = dynamic(() => import("../components/desktop/WallpaperCanvas"), { ssr: false });
 
 interface BatteryInfo extends EventTarget {
   level: number;
@@ -78,7 +79,7 @@ const ACHIEVEMENT_DESCRIPTIONS: Record<string, string> = {
 };
 
 export default function Home() {
-  const { bootState, theme, achievements, commandPaletteOpen, setCommandPaletteOpen, activeWindowId, closeWindow } = useOSStore();
+  const { bootState, theme, achievements, commandPaletteOpen, setCommandPaletteOpen, activeWindowId, closeWindow, isPlaying } = useOSStore();
   const { playSound } = useSystemSound();
   const [mounted, setMounted] = useState(false);
   
@@ -245,6 +246,20 @@ export default function Home() {
               {isCharging ? `⚡ ${batteryLevel}` : batteryLevel}
             </span>
           </div>
+          {/* Live Audio Equalizer Indicator */}
+          {isPlaying && (
+            <div 
+              onClick={() => { playSound("click"); useOSStore.getState().openWindow("spotify"); }}
+              className="hidden sm:flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-sys-accent/15 border border-sys-accent/30 cursor-pointer hover:bg-sys-accent/25 transition-all" 
+              title="Music Playing — Open Player"
+            >
+              <span className="w-0.5 h-3 bg-sys-accent rounded-full animate-bounce [animation-delay:0ms]" />
+              <span className="w-0.5 h-4 bg-sys-accent rounded-full animate-bounce [animation-delay:150ms]" />
+              <span className="w-0.5 h-2 bg-sys-accent rounded-full animate-bounce [animation-delay:300ms]" />
+              <span className="w-0.5 h-3.5 bg-sys-accent rounded-full animate-bounce [animation-delay:200ms]" />
+            </div>
+          )}
+
           <div className="hidden items-center gap-1 md:flex">
             <ShieldCheck size={13} className="text-emerald-500" />
             <span className="text-[10px] font-bold uppercase tracking-wider font-sans">SYS_OK</span>
@@ -252,6 +267,9 @@ export default function Home() {
           <NotificationCenter />
         </div>
       </div>
+
+      {/* 3D Interactive R3F Wallpaper Engine */}
+      <WallpaperCanvas />
 
       {/* Desktop Grid Icons */}
       <DesktopGrid />

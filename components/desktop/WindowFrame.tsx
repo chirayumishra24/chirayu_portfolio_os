@@ -109,12 +109,25 @@ export default function WindowFrame({ id, children }: WindowFrameProps) {
     setTouchDeltaY(0);
   };
 
+  const [snapPreview, setSnapPreview] = useState<"left" | "right" | "top" | null>(null);
+
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (isDragging && !isMobile) {
         const newX = Math.max(0, Math.min(window.innerWidth - 100, e.clientX - dragOffset.x));
         const newY = Math.max(0, Math.min(window.innerHeight - 80, e.clientY - dragOffset.y));
         updateWindowPosition(id, newX, newY);
+
+        // Aero Snap Edge Detection
+        if (e.clientX < 25) {
+          setSnapPreview("left");
+        } else if (e.clientX > window.innerWidth - 25) {
+          setSnapPreview("right");
+        } else if (e.clientY < 35) {
+          setSnapPreview("top");
+        } else {
+          setSnapPreview(null);
+        }
       }
 
       if (isResizing && !isMobile) {
@@ -126,9 +139,28 @@ export default function WindowFrame({ id, children }: WindowFrameProps) {
       }
     };
 
-    const handleMouseUp = () => {
+    const handleMouseUp = (e: MouseEvent) => {
+      if (isDragging && !isMobile) {
+        if (e.clientX < 25) {
+          // Snap Left 50%
+          playSound("click");
+          updateWindowPosition(id, 0, 36);
+          updateWindowSize(id, Math.floor(window.innerWidth / 2), window.innerHeight - 36 - 60);
+        } else if (e.clientX > window.innerWidth - 25) {
+          // Snap Right 50%
+          playSound("click");
+          updateWindowPosition(id, Math.floor(window.innerWidth / 2), 36);
+          updateWindowSize(id, Math.floor(window.innerWidth / 2), window.innerHeight - 36 - 60);
+        } else if (e.clientY < 35) {
+          // Maximize
+          playSound("click");
+          maximizeWindow(id);
+        }
+      }
+
       setIsDragging(false);
       setIsResizing(false);
+      setSnapPreview(null);
     };
 
     if (isDragging || isResizing) {
@@ -140,14 +172,30 @@ export default function WindowFrame({ id, children }: WindowFrameProps) {
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isDragging, isResizing, dragOffset, resizeStart, id, updateWindowPosition, updateWindowSize, isMobile]);
+  }, [isDragging, isResizing, dragOffset, resizeStart, id, updateWindowPosition, updateWindowSize, isMobile, maximizeWindow, playSound]);
 
   if (!windowState || !windowState.isOpen || windowState.isMinimized) return null;
 
   return (
-    <div
-      ref={frameRef}
-      onClick={() => focusWindow(id)}
+    <>
+      {/* Aero Snap Ghost Preview Overlay */}
+      {snapPreview && !isMobile && (
+        <div
+          style={{
+            position: "fixed",
+            left: snapPreview === "right" ? "50vw" : 0,
+            top: "var(--topbar-height)",
+            width: snapPreview === "top" ? "100vw" : "50vw",
+            height: "calc(100vh - var(--topbar-height) - var(--dock-height))",
+            zIndex: 99998,
+          }}
+          className="pointer-events-none rounded-xl border-2 border-sys-accent bg-sys-accent/15 backdrop-blur-sm shadow-2xl transition-all duration-150 animate-pulse"
+        />
+      )}
+
+      <div
+        ref={frameRef}
+        onClick={() => focusWindow(id)}
       style={{
         position: isMobile ? "fixed" : "absolute",
         left: (windowState.isMaximized || isMobile) ? 0 : windowState.x,
@@ -260,5 +308,6 @@ export default function WindowFrame({ id, children }: WindowFrameProps) {
         </div>
       )}
     </div>
+    </>
   );
 }

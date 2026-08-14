@@ -1,0 +1,39 @@
+{
+  "name": "ChirayuOS — Developer Portfolio OS",
+  "short_name": "ChirayuOS",
+  "description": "Interactive Web Desktop Operating System & Portfolio by Chirayu Mishra",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#090d16",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/icon",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-icon",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Live Deployments",
+      "url": "/?app=deployments",
+      "description": "Browse 38+ live embedded projects and deployments"
+    },
+    {
+      "name": "Terminal Shell",
+      "url": "/?app=terminal",
+      "description": "Launch developer command-line terminal"
+    },
+    {
+      "name": "Interactive CV",
+      "url": "/?app=resume",
+      "description": "View resume and professional experience"
+    }
+  ]
+}

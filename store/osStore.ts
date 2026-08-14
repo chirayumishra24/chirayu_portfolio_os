@@ -58,8 +58,11 @@ export interface OSNotification {
   read: boolean;
 }
 
+export type WallpaperStyle = "constellation" | "grid" | "orbit" | "starfield" | "minimal";
+
 interface OSState {
   theme: ThemeName;
+  wallpaperStyle: WallpaperStyle;
   bootState: "booting" | "login" | "desktop";
   soundMuted: boolean;
   soundVolume: number;
@@ -76,6 +79,7 @@ interface OSState {
   unreadCount: number;
 
   setTheme: (theme: ThemeName) => void;
+  setWallpaperStyle: (style: WallpaperStyle) => void;
   setBootState: (state: "booting" | "login" | "desktop") => void;
   toggleSoundMuted: () => void;
   setSoundVolume: (volume: number) => void;
@@ -120,6 +124,7 @@ export const useOSStore = create<OSState>()(
   persist(
     (set) => ({
       theme: "tokyonight",
+      wallpaperStyle: "constellation",
       bootState: "booting",
       soundMuted: false,
       soundVolume: 50,
@@ -136,6 +141,7 @@ export const useOSStore = create<OSState>()(
       unreadCount: 0,
 
       setTheme: (theme) => set({ theme }),
+      setWallpaperStyle: (wallpaperStyle) => set({ wallpaperStyle }),
       setBootState: (bootState) => set({ bootState }),
       toggleSoundMuted: () => set((state) => ({ soundMuted: !state.soundMuted })),
       setSoundVolume: (soundVolume) => set({ soundVolume }),

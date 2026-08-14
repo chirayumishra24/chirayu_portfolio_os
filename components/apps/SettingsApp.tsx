@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { useOSStore, ThemeName } from "../../store/osStore";
+import { useOSStore, ThemeName, WallpaperStyle } from "../../store/osStore";
 import { SystemSoundType, useSystemSound } from "../../hooks/useSystemSound";
 import {
   Settings, Paintbrush, Volume2, Eye, Monitor,
-  Accessibility, Code, RotateCcw, Download, Upload, Trophy
+  Accessibility, Code, RotateCcw, Download, Upload, Trophy, Sparkles
 } from "lucide-react";
 import { clsx } from "clsx";
 
@@ -14,6 +14,7 @@ type SettingsTab = "appearance" | "audio" | "accessibility" | "developer" | "ach
 export default function SettingsApp() {
   const {
     theme, setTheme,
+    wallpaperStyle, setWallpaperStyle,
     soundMuted, toggleSoundMuted,
     soundVolume, setSoundVolume,
     achievements,
@@ -162,6 +163,55 @@ export default function SettingsApp() {
                   </div>
                 </button>
               ))}
+            </div>
+
+            {/* 3D Interactive Wallpaper Engine Selector */}
+            <div className="space-y-3 pt-3 border-t border-sys-border">
+              <div className="space-y-1">
+                <h3 className="text-sm font-bold text-zinc-100 flex items-center gap-1.5">
+                  <Sparkles size={14} className="text-sys-accent" /> 3D Wallpaper Engine
+                </h3>
+                <p className="text-xs text-sys-text-secondary">Choose the real-time Three.js interactive background style.</p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                {[
+                  { id: "constellation" as WallpaperStyle, label: "Cyber Constellation", desc: "Interactive drifting particle nodes with mouse parallax" },
+                  { id: "grid" as WallpaperStyle, label: "Synthwave Horizon Grid", desc: "3D infinite wireframe landscape perspective" },
+                  { id: "orbit" as WallpaperStyle, label: "Audio-Reactive Orbit Core", desc: "Dual geometric spinning rings and wireframe icosahedron" },
+                  { id: "starfield" as WallpaperStyle, label: "Deep Space Starfield", desc: "High-speed cosmic warp vortex particles" },
+                  { id: "minimal" as WallpaperStyle, label: "Minimal Static Dark", desc: "Pure OLED black background for maximum battery saver" },
+                ].map((w) => (
+                  <button
+                    key={w.id}
+                    onClick={() => {
+                      playSound("click");
+                      setWallpaperStyle(w.id);
+                      pushNotification({
+                        type: "info",
+                        title: "Wallpaper Updated",
+                        message: `3D Wallpaper set to ${w.label}.`
+                      });
+                    }}
+                    className={clsx(
+                      "p-3 rounded-2xl border text-left transition-all duration-150 hover:shadow-lg active:scale-95",
+                      wallpaperStyle === w.id
+                        ? "border-sys-accent bg-sys-accent/15 shadow-md shadow-sys-accent/10"
+                        : "border-sys-border hover:border-zinc-600 bg-zinc-950/30"
+                    )}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-zinc-200">{w.label}</span>
+                      {wallpaperStyle === w.id ? (
+                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-sys-accent text-zinc-950">Active</span>
+                      ) : (
+                        <span className="text-[9px] text-zinc-500">Select</span>
+                      )}
+                    </div>
+                    <p className="text-[10.5px] text-zinc-400 mt-1 leading-snug">{w.desc}</p>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         )}

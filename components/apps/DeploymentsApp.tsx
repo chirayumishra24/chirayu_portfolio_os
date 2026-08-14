@@ -212,6 +212,29 @@ export default function DeploymentsApp() {
               >
                 {copiedId === focusedProject.id ? <CheckCircle2 size={12} className="text-emerald-400" /> : <Share2 size={12} />}
               </button>
+              <button
+                onClick={() => {
+                  const snippet = `<iframe src="${focusedProject.url}" title="${focusedProject.title}" width="100%" height="600" style="border:none;border-radius:12px;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+                  navigator.clipboard.writeText(snippet);
+                  playSound("success");
+                  setCopiedId("embed-" + focusedProject.id);
+                  setTimeout(() => setCopiedId(null), 2000);
+                }}
+                className="flex items-center gap-1 px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[11px] font-semibold transition-colors"
+                title="Copy HTML Embed Code"
+              >
+                {copiedId === "embed-" + focusedProject.id ? (
+                  <>
+                    <CheckCircle2 size={11} className="text-emerald-400" />
+                    <span className="text-emerald-400 font-bold">Copied Snippet!</span>
+                  </>
+                ) : (
+                  <>
+                    <Code2 size={11} />
+                    <span className="hidden sm:inline">Embed Code</span>
+                  </>
+                )}
+              </button>
               <a
                 href={focusedProject.githubUrl}
                 target="_blank"
@@ -236,12 +259,20 @@ export default function DeploymentsApp() {
           <div className="flex-1 flex items-center justify-center p-2 sm:p-4 bg-zinc-900/30 overflow-auto">
             <div
               className={clsx(
-                "h-full w-full transition-all duration-300 rounded-xl overflow-hidden border border-sys-border shadow-2xl bg-zinc-950",
-                deviceViewport === "mobile" && "max-w-[390px] h-[780px] my-auto",
-                deviceViewport === "tablet" && "max-w-[768px] h-[900px] my-auto",
-                deviceViewport === "desktop" && "max-w-full h-full"
+                "transition-all duration-300 overflow-hidden shadow-2xl bg-zinc-950 flex flex-col relative",
+                deviceViewport === "mobile" && "w-[390px] h-[780px] my-auto rounded-[48px] border-[10px] border-zinc-800 ring-1 ring-zinc-700/50 shadow-black/80",
+                deviceViewport === "tablet" && "w-[768px] h-[900px] my-auto rounded-3xl border-[8px] border-zinc-800",
+                deviceViewport === "desktop" && "w-full h-full rounded-xl border border-sys-border"
               )}
             >
+              {/* iPhone 15 Pro Dynamic Island Bezel */}
+              {deviceViewport === "mobile" && (
+                <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-24 h-6 bg-black rounded-full z-30 flex items-center justify-between px-2.5 shadow-md pointer-events-none">
+                  <div className="w-2.5 h-2.5 rounded-full bg-zinc-900 border border-zinc-800" />
+                  <div className="w-2 h-2 rounded-full bg-blue-950/80 border border-blue-800/40" />
+                </div>
+              )}
+
               {reloadingId !== focusedProject.id && (
                 <iframe
                   src={focusedProject.url}

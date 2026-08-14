@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { profile } from "../data/portfolio";
@@ -15,6 +15,13 @@ const geistMono = localFont({
   variable: "--font-geist-mono",
   weight: "100 900",
 });
+
+export const viewport: Viewport = {
+  themeColor: "#090d16",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -37,6 +44,12 @@ export const metadata: Metadata = {
   authors: [{ name: "Chirayu Mishra" }],
   creator: profile.name,
   publisher: profile.name,
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "ChirayuOS",
+  },
   alternates: {
     canonical: "/",
   },
