@@ -6,6 +6,7 @@ import { useSystemSound } from "../../hooks/useSystemSound";
 import confetti from "canvas-confetti";
 import { clsx } from "clsx";
 import { experienceEntries, profile, projects } from "../../data/portfolio";
+import { Terminal as TerminalIcon, Sparkles } from "lucide-react";
 
 export default function TerminalApp() {
   const { setTheme, openWindow, unlockAchievement } = useOSStore();
@@ -17,19 +18,29 @@ export default function TerminalApp() {
   const [input, setInput] = useState("");
   const [terminalLogs, setTerminalLogs] = useState<{ type: "input" | "output" | "error" | "success"; text: string }[]>([
     { type: "output", text: "CHIRAYU-OS Terminal [Version 2.26]" },
-    { type: "output", text: "Copyright (C) 2026 Chirayu. All rights reserved." },
-    { type: "output", text: "Type 'help' to view available system commands, or trigger 'sudo hire chirayu' directly." },
+    { type: "output", text: "Copyright (C) 2026 Chirayu Mishra. All rights reserved." },
+    { type: "output", text: "Type 'help' or tap any quick action chip below to run commands." },
     { type: "output", text: "" }
   ]);
 
   const [matrixMode, setMatrixMode] = useState(false);
 
   useEffect(() => {
-    // Scroll to bottom on updates
     terminalEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [terminalLogs]);
 
-  // Intercept events from Command Palette or other apps
+  // Quick Command Chips for mobile/desktop
+  const quickCommands = [
+    { label: "help", cmd: "help" },
+    { label: "about", cmd: "about" },
+    { label: "projects", cmd: "projects" },
+    { label: "sudo hire chirayu", cmd: "sudo hire chirayu", highlight: true },
+    { label: "theme dracula", cmd: "theme dracula" },
+    { label: "theme kratos", cmd: "theme kratos" },
+    { label: "matrix", cmd: "matrix" },
+    { label: "clear", cmd: "clear" },
+  ];
+
   const executeCommand = useCallback((cmd: string) => {
     const trimmed = cmd.trim();
     if (!trimmed) return;
@@ -39,16 +50,14 @@ export default function TerminalApp() {
     const commandName = args[0].toLowerCase();
     const commandArg = args[1]?.toLowerCase();
 
-    // Add to history
     setHistory((prev) => [trimmed, ...prev]);
     setHistoryIndex(-1);
 
-    // Command Interpreter
     switch (commandName) {
       case "help":
         newLogs.push({
           type: "output",
-          text: `Available commands:\n  help         - Show this menu\n  about        - Biography details\n  projects     - List portfolios key projects\n  skills       - Visual technical skills listing\n  experience   - Work timeline history\n  resume       - Launch CV layout\n  contact      - Compose email panel\n  github       - Show repository details\n  theme [name] - Switch visual theme (e.g. theme dracula)\n  clear        - Clear console logs\n  open [app]   - Open desktop app window (e.g. open games)\n  play [game]  - Launch mini game directly (snake, quiz, bughunt)\n  matrix       - Enter digital falling green code stream\n  sudo hire chirayu - Unlock easter egg & hire candidate`
+          text: `Available commands:\n  help         - Show this menu\n  about        - Biography details\n  projects     - List verified key projects\n  skills       - Technical skills overview\n  experience   - Work timeline history\n  resume       - Launch CV layout\n  contact      - Compose email panel\n  github       - Show repository stats\n  theme [name] - Switch visual theme (e.g. theme dracula)\n  clear        - Clear console logs\n  open [app]   - Open desktop app window\n  matrix       - Enter digital falling green code stream\n  sudo hire chirayu - Trigger hire candidate celebration`
         });
         break;
 
@@ -86,7 +95,7 @@ export default function TerminalApp() {
         break;
 
       case "contact":
-        newLogs.push({ type: "output", text: "Launching Gmail Mail Compose window..." });
+        newLogs.push({ type: "output", text: "Launching Mail Compose window..." });
         setTimeout(() => openWindow("contact"), 300);
         break;
 
@@ -133,11 +142,6 @@ export default function TerminalApp() {
         }
         break;
 
-      case "play":
-        newLogs.push({ type: "output", text: "Opening Arcade Games application..." });
-        setTimeout(() => openWindow("games"), 300);
-        break;
-
       case "matrix":
         setMatrixMode(true);
         unlockAchievement("Matrix Modder");
@@ -153,21 +157,21 @@ export default function TerminalApp() {
           playSound("achievement");
           unlockAchievement("Hired Chirayu!");
           confetti({
-            particleCount: 150,
-            spread: 80,
+            particleCount: 160,
+            spread: 85,
             origin: { y: 0.6 }
           });
           newLogs.push({
             type: "success",
-            text: `★★★★★ ACCESS GRANTED ★★★★★\nThank you for hiring Chirayu! Confetti deployed successfully.\nContract sent to client. Terminal unlocked.`
+            text: `★★★★★ ACCESS GRANTED ★★★★★\nThank you for hiring Chirayu! Confetti deployed successfully.\nContract packet sent. System unlocked.`
           });
         } else {
-          newLogs.push({ type: "error", text: "Permission denied. Only 'sudo hire chirayu' is recognized." });
+          newLogs.push({ type: "error", text: "Permission denied. Try 'sudo hire chirayu'." });
         }
         break;
 
       default:
-        newLogs.push({ type: "error", text: `Command not found: '${commandName}'. Type 'help' to see system commands.` });
+        newLogs.push({ type: "error", text: `Command not found: '${commandName}'. Type 'help' to see commands.` });
     }
 
     setTerminalLogs(newLogs);
@@ -225,8 +229,7 @@ export default function TerminalApp() {
           </div>
         </div>
         
-        {/* Animated Digital Rain columns */}
-        <div className="absolute inset-0 flex justify-between overflow-hidden px-4 text-xs leading-none opacity-30 select-none pointer-events-none mask-gradient sm:px-10">
+        <div className="absolute inset-0 flex justify-between overflow-hidden px-4 text-xs leading-none opacity-30 select-none pointer-events-none sm:px-10">
           {Array.from({ length: 15 }).map((_, i) => (
             <div key={i} className="animate-[matrix-fall_5s_linear_infinite] whitespace-pre" style={{ animationDelay: `${i * 0.3}s` }}>
               {Array.from({ length: 40 }).map(() => String.fromCharCode(33 + Math.floor(Math.random() * 93))).join("\n")}
@@ -238,16 +241,20 @@ export default function TerminalApp() {
   }
 
   return (
-    <div className="flex h-full w-full cursor-text flex-col overflow-auto bg-sys-terminal p-3 font-mono text-sys-terminal-fg select-text sm:p-4" onClick={() => document.getElementById("terminal-input")?.focus()}>
-      <div className="min-h-0 flex-1 space-y-1 text-[11px] sm:text-xs">
+    <div 
+      className="flex h-full w-full cursor-text flex-col justify-between overflow-hidden bg-sys-terminal p-3 font-mono text-sys-terminal-fg select-text sm:p-4" 
+      onClick={() => document.getElementById("terminal-input")?.focus()}
+    >
+      {/* Logs Scroll Area */}
+      <div className="min-h-0 flex-1 overflow-y-auto space-y-1 text-[11px] sm:text-xs pr-1 overscroll-contain scrollbar-thin">
         {terminalLogs.map((log, idx) => (
           <div 
             key={idx} 
             className={clsx(
               "leading-relaxed whitespace-pre-wrap",
-              log.type === "input" && "text-zinc-200 font-semibold",
+              log.type === "input" && "text-zinc-100 font-bold",
               log.type === "error" && "text-red-400",
-              log.type === "success" && "text-green-400",
+              log.type === "success" && "text-emerald-400 font-semibold",
               log.type === "output" && "text-sys-terminal-fg"
             )}
           >
@@ -257,19 +264,49 @@ export default function TerminalApp() {
         <div ref={terminalEndRef} />
       </div>
 
-      {/* Input Prompt */}
-      <div className="mt-3 flex items-center gap-1.5 text-[11px] select-none sm:text-xs">
-        <span className="shrink-0 font-bold text-green-400">chirayu@portfolio:~$</span>
-        <input
-          id="terminal-input"
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          autoComplete="off"
-          autoFocus
-          className="min-w-0 flex-1 bg-transparent text-zinc-100 caret-sys-accent focus:outline-none select-text"
-        />
+      {/* Bottom Area: Input Prompt + Quick Action Chips */}
+      <div className="mt-2 border-t border-sys-border/50 pt-2 space-y-2 shrink-0 select-none">
+        
+        {/* Quick Command Chips */}
+        <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+          {quickCommands.map((item) => (
+            <button
+              key={item.cmd}
+              type="button"
+              onClick={() => {
+                executeCommand(item.cmd);
+                playSound("click");
+              }}
+              className={clsx(
+                "px-2.5 py-1 rounded-lg text-[10px] font-mono shrink-0 transition-all active:scale-95 border",
+                item.highlight 
+                  ? "bg-sys-accent/20 border-sys-accent/50 text-sys-accent font-bold"
+                  : "bg-zinc-900/80 border-zinc-800 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-850"
+              )}
+            >
+              {item.highlight && <Sparkles size={10} className="inline mr-1 animate-pulse" />}
+              <span>{item.label}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Real Shell Prompt Input */}
+        <div className="flex items-center gap-2 text-xs">
+          <span className="shrink-0 font-bold text-emerald-400 flex items-center gap-1">
+            <TerminalIcon size={12} className="hidden sm:inline" />
+            chirayu@os:~$
+          </span>
+          <input
+            id="terminal-input"
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            autoComplete="off"
+            autoFocus
+            className="min-w-0 flex-1 bg-transparent text-zinc-100 caret-sys-accent focus:outline-none select-text text-xs"
+          />
+        </div>
       </div>
     </div>
   );

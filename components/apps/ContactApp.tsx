@@ -27,7 +27,6 @@ export default function ContactApp() {
     e.preventDefault();
     setErrorMsg("");
 
-    // Validation
     if (!name.trim() || !email.trim() || !subject.trim() || !message.trim()) {
       setErrorMsg("All fields are required.");
       playSound("error");
@@ -40,10 +39,9 @@ export default function ContactApp() {
       return;
     }
 
-    // Rate Limiting (1 message every 30 seconds)
     const lastSent = localStorage.getItem("last_email_sent");
     if (lastSent && Date.now() - parseInt(lastSent) < 30000) {
-      setErrorMsg("Please wait 30 seconds before sending another mail.");
+      setErrorMsg("Please wait 30 seconds before sending another message.");
       playSound("error");
       return;
     }
@@ -63,9 +61,8 @@ export default function ContactApp() {
         localStorage.setItem("last_email_sent", Date.now().toString());
         playSound("success");
         unlockAchievement("Message Delivered");
-        pushNotification({ type: "success", title: "Message Sent", message: `Your email to Chirayu has been delivered successfully.` });
+        pushNotification({ type: "success", title: "Message Sent", message: `Your message to Chirayu has been dispatched successfully.` });
         
-        // Reset form
         setName("");
         setEmail("");
         setSubject("");
@@ -76,7 +73,7 @@ export default function ContactApp() {
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Server error. Please try again.";
-      setErrorMsg(`${message} You can still email directly using the fallback button below.`);
+      setErrorMsg(`${message} You can still reach Chirayu directly using the email client fallback button.`);
       playSound("error");
     } finally {
       setIsSending(false);
@@ -90,10 +87,10 @@ export default function ContactApp() {
   };
 
   const visibleLinks = socialLinks.filter((link) => link.visible && link.href);
-  const mailtoDraftHref = `mailto:${profile.email}?subject=${encodeURIComponent(subject || "Portfolio inquiry")}&body=${encodeURIComponent(
+  const mailtoDraftHref = `mailto:${profile.email}?subject=${encodeURIComponent(subject || "Portfolio Contact")}&body=${encodeURIComponent(
     message
-      ? `${message}\n\nFrom: ${name || "Your name"}${email ? ` (${email})` : ""}`
-      : `Hi Chirayu,\n\nI saw your portfolio and wanted to connect.\n\nFrom: ${name || "Your name"}${email ? ` (${email})` : ""}`
+      ? `${message}\n\nFrom: ${name || "Sender"}${email ? ` (${email})` : ""}`
+      : `Hi Chirayu,\n\nI reviewed your portfolio and would like to connect.\n\nFrom: ${name || "Sender"}${email ? ` (${email})` : ""}`
   )}`;
 
   const handleCopyEmail = async () => {
@@ -117,42 +114,42 @@ export default function ContactApp() {
   };
 
   return (
-    <div className="flex h-full w-full flex-col text-zinc-300 select-text md:flex-row">
+    <div className="flex h-full w-full flex-col text-zinc-300 select-text md:flex-row font-sans">
       {/* Side Links Pane */}
-      <div className="flex w-full shrink-0 flex-col gap-4 border-b border-sys-border bg-zinc-950/60 p-3 font-sans select-none md:w-56 md:justify-between md:border-b-0 md:border-r md:p-4">
+      <div className="flex w-full shrink-0 flex-col gap-3 border-b border-sys-border bg-zinc-950/70 p-3 select-none md:w-56 md:justify-between md:border-b-0 md:border-r md:p-4">
         <div className="space-y-3 md:space-y-4">
           <div className="flex items-center gap-2 text-sys-accent border-b border-sys-border pb-2.5">
             <Mail size={16} />
-            <span className="text-xs font-bold uppercase tracking-wider">Quick Connect</span>
+            <span className="text-xs font-bold uppercase tracking-wider">Direct Channels</span>
           </div>
 
           <div className="grid grid-cols-2 gap-2 md:grid-cols-1">
             <button
               type="button"
               onClick={handleCopyEmail}
-              className="flex items-center justify-center gap-2 rounded border border-sys-border px-3 py-2 text-xs text-zinc-300 transition-colors hover:bg-zinc-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sys-accent"
+              className="flex items-center justify-center gap-1.5 rounded-xl border border-sys-border bg-zinc-900/60 px-3 py-2 text-xs font-semibold text-zinc-300 transition-colors hover:bg-zinc-850 active:scale-95"
             >
-              {copiedEmail ? <Check size={14} className="text-emerald-400" /> : <Copy size={14} className="text-sys-accent" />}
+              {copiedEmail ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} className="text-sys-accent" />}
               <span>{copiedEmail ? "Copied" : "Copy Email"}</span>
             </button>
             <a
               href={`mailto:${profile.email}`}
-              className="flex items-center justify-center gap-2 rounded border border-sys-border px-3 py-2 text-xs text-zinc-300 transition-colors hover:bg-zinc-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sys-accent"
+              className="flex items-center justify-center gap-1.5 rounded-xl border border-sys-border bg-zinc-900/60 px-3 py-2 text-xs font-semibold text-zinc-300 transition-colors hover:bg-zinc-850 active:scale-95"
             >
-              <Mail size={14} className="text-sys-accent" />
+              <Mail size={13} className="text-sys-accent" />
               <span>Mail App</span>
             </a>
           </div>
 
-          {/* Socials & Booking Grid */}
-          <div className="flex gap-2 overflow-x-auto scrollbar-none md:block md:space-y-2 md:overflow-visible">
+          {/* Social Links */}
+          <div className="flex gap-1.5 overflow-x-auto scrollbar-none md:block md:space-y-1.5 md:overflow-visible">
             {visibleLinks.map((link) => (
               <a
                 key={link.label}
                 href={link.href}
                 target={link.kind === "email" ? undefined : "_blank"}
                 rel={link.kind === "email" ? undefined : "noopener noreferrer"}
-                className="flex shrink-0 items-center gap-2.5 rounded border border-sys-border px-3 py-2 text-xs text-zinc-300 transition-colors hover:bg-zinc-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sys-accent md:w-full"
+                className="flex shrink-0 items-center gap-2 rounded-xl border border-sys-border bg-zinc-900/40 px-3 py-1.5 text-xs text-zinc-300 transition-colors hover:bg-zinc-850 active:scale-95 md:w-full md:rounded-lg"
               >
                 {linkIcons[link.kind]}
                 <span>{link.label}</span>
@@ -163,46 +160,46 @@ export default function ContactApp() {
 
         {/* System Email Signature */}
         <div className="hidden text-[10px] text-zinc-500 space-y-1 border-t border-sys-border/50 pt-3 md:block">
-          <p className="font-bold">{profile.name}</p>
+          <p className="font-bold text-zinc-300">{profile.name}</p>
           <p>{profile.location}</p>
-          <p className="font-mono text-[9px]">{profile.email}</p>
+          <p className="font-mono text-[9px] text-sys-accent">{profile.email}</p>
         </div>
       </div>
 
       {/* Gmail Inbox Content */}
-      <div className="flex min-h-0 flex-1 flex-col justify-center bg-zinc-950/20 p-4 md:min-w-0 md:p-6">
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto bg-zinc-950/30 p-4 sm:p-6 overscroll-contain">
         {isSuccess ? (
-          <div className="max-w-md mx-auto text-center space-y-5 animate-in zoom-in-95 duration-200 select-none">
+          <div className="my-auto max-w-md mx-auto text-center space-y-4 animate-in zoom-in-95 duration-200 select-none">
             <div className="w-16 h-16 rounded-full bg-emerald-950/60 border border-emerald-500 text-emerald-400 flex items-center justify-center mx-auto shadow-lg shadow-emerald-950/20">
               <SendHorizontal size={24} className="animate-[pulse_1.5s_infinite]" />
             </div>
             
-            <div className="space-y-1.5">
-              <h3 className="font-semibold text-zinc-100 text-sm tracking-wide">Mail Dispatched Successfully!</h3>
+            <div className="space-y-1">
+              <h3 className="font-bold text-zinc-100 text-sm tracking-wide">Mail Dispatched Successfully!</h3>
               <p className="text-xs text-sys-text-secondary leading-relaxed">
-                Your message has been safely routed to Chirayu&apos;s inbox.
+                Thank you for reaching out. Chirayu will review your message and respond promptly.
               </p>
             </div>
 
             <button
               onClick={handleReset}
-              className="flex items-center gap-2 py-2 px-4 rounded bg-zinc-900 hover:bg-zinc-800 border border-sys-border text-xs mx-auto transition-colors"
+              className="flex items-center gap-2 py-2.5 px-4 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-sys-border text-xs font-semibold mx-auto transition-colors active:scale-95"
             >
-              <ArrowLeft size={12} />
-              <span>Compose New Mail</span>
+              <ArrowLeft size={13} />
+              <span>Compose New Message</span>
             </button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-4 max-w-2xl mx-auto w-full">
+          <form onSubmit={handleSubmit} className="my-auto max-w-xl mx-auto w-full space-y-3.5">
             {/* Header info */}
-            <div className="flex items-center justify-between border-b border-sys-border/50 pb-2 mb-2 select-none">
-              <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-sys-accent">
-                <Send size={12} /> New Message Compose
+            <div className="flex items-center justify-between border-b border-sys-border/50 pb-2.5 select-none">
+              <span className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-sys-accent">
+                <Send size={13} /> Send a Message
               </span>
               <button
                 type="button"
                 onClick={() => { setName(""); setEmail(""); setSubject(""); setMessage(""); }}
-                className="text-zinc-500 hover:text-red-400 p-1 rounded transition-colors"
+                className="text-zinc-500 hover:text-red-400 p-1 rounded-lg transition-colors"
                 title="Discard Draft"
               >
                 <Trash2 size={14} />
@@ -211,92 +208,92 @@ export default function ContactApp() {
 
             {/* Error Message */}
             {errorMsg && (
-              <div className="space-y-2 rounded-lg border border-red-500/20 bg-red-950/40 p-3 text-xs text-red-400 select-none">
-                <div className="flex items-start gap-2.5">
-                  <AlertCircle size={14} className="mt-0.5 shrink-0" />
+              <div className="space-y-2 rounded-xl border border-red-500/30 bg-red-950/40 p-3 text-xs text-red-300 select-none">
+                <div className="flex items-start gap-2">
+                  <AlertCircle size={14} className="mt-0.5 shrink-0 text-red-400" />
                   <span>{errorMsg}</span>
                 </div>
                 <a
                   href={mailtoDraftHref}
-                  className="inline-flex items-center gap-1.5 rounded border border-red-500/30 px-2 py-1 text-[11px] font-bold text-red-200 transition-colors hover:bg-red-950"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-red-500/40 bg-red-900/40 px-2.5 py-1 text-[11px] font-bold text-red-200 transition-colors"
                 >
                   <Mail size={12} />
-                  Open fallback email
+                  Open Default Mail Client
                 </a>
               </div>
             )}
 
             {/* Form Fields */}
             <div className="space-y-3">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold text-zinc-500 tracking-wider">Your Name</label>
+                  <label className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider">Your Name</label>
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="e.g. John Doe"
-                    className="touch-target w-full rounded border border-sys-border bg-zinc-950/60 px-3 py-2 text-xs transition-colors focus:border-sys-border-active focus:outline-none"
+                    placeholder="e.g. Alex Smith"
+                    className="touch-target w-full rounded-xl border border-sys-border bg-zinc-900/80 px-3 py-2 text-xs transition-colors focus:border-sys-accent focus:outline-none"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] uppercase font-bold text-zinc-500 tracking-wider">Email Address</label>
+                  <label className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider">Your Email</label>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="e.g. john@example.com"
-                    className="touch-target w-full rounded border border-sys-border bg-zinc-950/60 px-3 py-2 text-xs transition-colors focus:border-sys-border-active focus:outline-none"
+                    placeholder="e.g. alex@example.com"
+                    className="touch-target w-full rounded-xl border border-sys-border bg-zinc-900/80 px-3 py-2 text-xs transition-colors focus:border-sys-accent focus:outline-none"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] uppercase font-bold text-zinc-500 tracking-wider">Subject</label>
+                <label className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider">Subject</label>
                 <input
                   type="text"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  placeholder="e.g. Project Consultation / Job Opportunity"
-                  className="touch-target w-full rounded border border-sys-border bg-zinc-950/60 px-3 py-2 text-xs transition-colors focus:border-sys-border-active focus:outline-none"
+                  placeholder="e.g. Project Inquiry or Full-Time Opportunity"
+                  className="touch-target w-full rounded-xl border border-sys-border bg-zinc-900/80 px-3 py-2 text-xs transition-colors focus:border-sys-accent focus:outline-none"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] uppercase font-bold text-zinc-500 tracking-wider">Message Content</label>
+                <label className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider">Message</label>
                 <textarea
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Write your email details here..."
-                  rows={6}
-                  className="w-full resize-none rounded border border-sys-border bg-zinc-950/60 px-3 py-2 text-xs transition-colors scrollbar-thin focus:border-sys-border-active focus:outline-none"
+                  placeholder="Write your message here..."
+                  rows={5}
+                  className="w-full resize-none rounded-xl border border-sys-border bg-zinc-900/80 px-3 py-2.5 text-xs transition-colors scrollbar-thin focus:border-sys-accent focus:outline-none"
                 />
               </div>
             </div>
 
-            {/* Submit Button */}
-            <div className="flex items-center justify-end pt-2">
+            {/* Submit Actions */}
+            <div className="flex items-center justify-end gap-2 pt-2">
+              <a
+                href={mailtoDraftHref}
+                className="flex items-center gap-1.5 rounded-xl border border-sys-border bg-zinc-900 px-3 py-2 text-xs font-semibold text-zinc-300 hover:bg-zinc-800 active:scale-95"
+              >
+                <Mail size={13} />
+                <span>Open in App</span>
+              </a>
               <button
                 type="submit"
                 disabled={isSending}
-                className="flex items-center gap-2 py-2 px-5 rounded bg-sys-accent hover:bg-sys-accent-hover text-zinc-950 font-bold text-xs transition-colors shadow-lg shadow-sys-accent/15 disabled:opacity-50 select-none"
+                className="flex items-center gap-2 py-2 px-5 rounded-xl bg-sys-accent hover:bg-sys-accent-hover text-zinc-950 font-bold text-xs transition-colors shadow-lg shadow-sys-accent/20 disabled:opacity-50 active:scale-95"
               >
                 {isSending ? (
-                  <span>DISPATCHING...</span>
+                  <span>Sending...</span>
                 ) : (
                   <>
-                    <SendHorizontal size={12} />
-                    <span>SEND MAIL</span>
+                    <SendHorizontal size={13} />
+                    <span>Send Message</span>
                   </>
                 )}
               </button>
-              <a
-                href={mailtoDraftHref}
-                className="ml-2 hidden items-center gap-1.5 rounded border border-sys-border px-3 py-2 text-[11px] font-bold text-zinc-300 transition-colors hover:bg-zinc-900 sm:flex"
-              >
-                <Mail size={12} />
-                Fallback
-              </a>
             </div>
           </form>
         )}

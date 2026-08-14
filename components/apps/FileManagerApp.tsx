@@ -125,23 +125,26 @@ export default function FileManagerApp() {
   return (
     <div className="w-full h-full flex flex-col text-zinc-300 font-sans select-text">
       {/* Toolbar */}
-      <div className="flex items-center gap-2 px-3 py-2 border-b border-sys-border bg-zinc-900/30">
+      <div className="flex items-center gap-1.5 px-3 py-2 border-b border-sys-border bg-zinc-950/70 shrink-0">
         <button
           onClick={goUp}
           disabled={!currentPath}
-          className="p-1.5 rounded-lg hover:bg-zinc-800 disabled:opacity-30 transition-colors"
+          aria-label="Go to parent directory"
+          className="touch-target p-1.5 rounded-lg hover:bg-zinc-800 disabled:opacity-30 transition-colors active:scale-95 sm:min-h-0 sm:min-w-0"
         >
           <ArrowLeft size={14} />
         </button>
         <button
           onClick={() => navigateTo("")}
-          className="p-1.5 rounded-lg hover:bg-zinc-800 transition-colors"
+          aria-label="Go to root repository directory"
+          className="touch-target p-1.5 rounded-lg hover:bg-zinc-800 transition-colors active:scale-95 sm:min-h-0 sm:min-w-0"
         >
           <Home size={14} />
         </button>
         <button
           onClick={() => fetchDir(currentPath)}
-          className="p-1.5 rounded-lg hover:bg-zinc-800 transition-colors"
+          aria-label="Refresh current directory"
+          className="touch-target p-1.5 rounded-lg hover:bg-zinc-800 transition-colors active:scale-95 sm:min-h-0 sm:min-w-0"
         >
           <RefreshCw size={14} />
         </button>
@@ -150,7 +153,7 @@ export default function FileManagerApp() {
         <div className="flex items-center gap-1 ml-2 flex-1 overflow-x-auto scrollbar-none">
           <button
             onClick={() => navigateTo("")}
-            className="text-[10px] font-bold text-sys-accent hover:underline shrink-0"
+            className="text-[10.5px] font-bold text-sys-accent hover:underline shrink-0"
           >
             {repo}
           </button>
@@ -159,7 +162,7 @@ export default function FileManagerApp() {
               <ChevronRight size={10} className="text-zinc-600 shrink-0" />
               <button
                 onClick={() => navigateTo(breadcrumbs.slice(0, i + 1).join("/"))}
-                className="text-[10px] font-semibold text-zinc-300 hover:text-sys-accent hover:underline shrink-0"
+                className="text-[10.5px] font-semibold text-zinc-300 hover:text-sys-accent hover:underline shrink-0 font-mono"
               >
                 {part}
               </button>
@@ -169,31 +172,31 @@ export default function FileManagerApp() {
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* File List (Left Panel) */}
+      <div className="flex-1 flex overflow-hidden min-h-0">
+        {/* File List (Left Panel / Full on Mobile) */}
         <div className={clsx(
-          "overflow-y-auto scrollbar-none border-r border-sys-border",
-          selectedFile && isMobile && "hidden",
-          selectedFile && !isMobile ? "w-[240px] shrink-0" : "w-full"
+          "overflow-y-auto scrollbar-thin border-r border-sys-border overscroll-contain",
+          selectedFile && isMobile ? "hidden" : "w-full",
+          selectedFile && !isMobile && "w-[260px] shrink-0"
         )}>
           {loading ? (
             <div className="flex items-center justify-center h-full">
-              <Loader2 size={20} className="animate-spin text-sys-accent" />
+              <Loader2 size={22} className="animate-spin text-sys-accent" />
             </div>
           ) : items.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-zinc-500">
-              <FolderOpen size={28} className="mb-2 opacity-30" />
-              <p className="text-xs">Empty directory</p>
+            <div className="flex flex-col items-center justify-center h-full text-zinc-500 p-6 text-center">
+              <FolderOpen size={32} className="mb-2 opacity-30" />
+              <p className="text-xs">No files in this directory</p>
             </div>
           ) : (
             <div className="py-1">
               {currentPath && (
                 <button
                   onClick={goUp}
-                  className="w-full flex items-center gap-2.5 px-3 py-1.5 hover:bg-zinc-800/50 transition-colors text-left"
+                  className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-zinc-800/50 transition-colors text-left"
                 >
-                  <ArrowLeft size={12} className="text-zinc-500" />
-                  <span className="text-[11px] text-zinc-500 font-mono">..</span>
+                  <ArrowLeft size={13} className="text-zinc-500" />
+                  <span className="text-xs text-zinc-500 font-mono">..</span>
                 </button>
               )}
               {items.map((item) => (
@@ -201,25 +204,25 @@ export default function FileManagerApp() {
                   key={item.path}
                   onClick={() => item.type === "dir" ? navigateTo(item.path) : fetchFile(item.path)}
                   className={clsx(
-                    "w-full flex items-center gap-2.5 px-3 py-1.5 hover:bg-zinc-800/50 transition-colors text-left group",
+                    "w-full flex items-center gap-2.5 px-3.5 py-2 hover:bg-zinc-800/50 transition-colors text-left group active:scale-98",
                     selectedFile?.path === item.path && "bg-sys-accent/10 border-l-2 border-l-sys-accent"
                   )}
                 >
                   {item.type === "dir" ? (
-                    <FolderOpen size={14} className="text-amber-400 shrink-0" />
+                    <FolderOpen size={15} className="text-amber-400 shrink-0" />
                   ) : (
                     <span className={clsx("shrink-0", getFileColor(item.name))}>
                       {getFileIcon(item.name)}
                     </span>
                   )}
-                  <span className="text-[11px] font-mono truncate flex-1 group-hover:text-zinc-100">
+                  <span className="text-xs font-mono truncate flex-1 group-hover:text-zinc-100">
                     {item.name}
                   </span>
                   {item.type === "file" && (
-                    <span className="text-[9px] text-zinc-600 shrink-0 font-mono">{formatSize(item.size)}</span>
+                    <span className="text-[10px] text-zinc-500 shrink-0 font-mono">{formatSize(item.size)}</span>
                   )}
                   {item.type === "dir" && (
-                    <ChevronRight size={12} className="text-zinc-600 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <ChevronRight size={13} className="text-zinc-600 shrink-0" />
                   )}
                 </button>
               ))}
@@ -227,11 +230,11 @@ export default function FileManagerApp() {
           )}
         </div>
 
-        {/* File Preview (Right Panel) */}
+        {/* File Preview (Right Panel / Full on Mobile) */}
         {selectedFile && (
-          <div className="flex-1 flex flex-col overflow-hidden">
+          <div className="flex-1 flex flex-col overflow-hidden min-h-0">
             {/* File Header */}
-            <div className="flex items-center justify-between px-4 py-2 border-b border-sys-border bg-zinc-900/20">
+            <div className="flex items-center justify-between px-3.5 py-2 border-b border-sys-border bg-zinc-900/40 shrink-0">
               <div className="flex items-center gap-2 min-w-0">
                 {isMobile && (
                   <button
@@ -239,34 +242,34 @@ export default function FileManagerApp() {
                       playSound("click");
                       setSelectedFile(null);
                     }}
-                    className="mr-1 rounded p-1.5 text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-zinc-100"
-                    title="Back to files"
+                    className="mr-1 rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-100 active:scale-95"
+                    title="Back to file list"
                   >
-                    <ArrowLeft size={14} />
+                    <ArrowLeft size={15} />
                   </button>
                 )}
                 <span className={getFileColor(selectedFile.name)}>
                   {getFileIcon(selectedFile.name)}
                 </span>
-                <span className="text-[11px] font-bold text-zinc-200 truncate">{selectedFile.name}</span>
+                <span className="text-xs font-bold text-zinc-200 truncate font-mono">{selectedFile.name}</span>
               </div>
-              <div className="flex items-center gap-3 shrink-0">
-                <span className="text-[9px] px-2 py-0.5 rounded bg-zinc-800 text-zinc-400 font-mono">{selectedFile.language}</span>
-                <span className="text-[9px] text-zinc-500 font-mono">{formatSize(selectedFile.size)}</span>
+              <div className="flex items-center gap-2 shrink-0">
+                <span className="text-[9.5px] px-2 py-0.5 rounded bg-zinc-800 text-zinc-400 font-mono uppercase">{selectedFile.language}</span>
+                <span className="text-[9.5px] text-zinc-500 font-mono">{formatSize(selectedFile.size)}</span>
               </div>
             </div>
 
             {/* Code Content */}
-            <div className="flex-1 overflow-auto scrollbar-none">
+            <div className="flex-1 overflow-auto scrollbar-thin p-3 bg-zinc-950/40 font-mono text-[11px] leading-relaxed">
               {fileLoading ? (
                 <div className="flex items-center justify-center h-full">
-                  <Loader2 size={20} className="animate-spin text-sys-accent" />
+                  <Loader2 size={22} className="animate-spin text-sys-accent" />
                 </div>
               ) : (
-                <pre className="p-4 text-[10px] leading-relaxed font-mono text-zinc-300 whitespace-pre overflow-x-auto">
+                <pre className="text-zinc-200 whitespace-pre overflow-x-auto">
                   {selectedFile.content.split("\n").map((line, i) => (
                     <div key={i} className="flex hover:bg-zinc-800/30 transition-colors">
-                      <span className="w-10 shrink-0 text-right pr-4 text-zinc-600 select-none">{i + 1}</span>
+                      <span className="w-8 shrink-0 text-right pr-3 text-zinc-600 select-none">{i + 1}</span>
                       <span className="flex-1">{line || " "}</span>
                     </div>
                   ))}

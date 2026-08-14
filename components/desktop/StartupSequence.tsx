@@ -7,20 +7,20 @@ import { Shield, Cpu, Play, Volume2, VolumeX, FastForward } from "lucide-react";
 import { profile } from "../../data/portfolio";
 
 const BIOS_LOGS = [
-  "CHIRAYU-OS PORTFOLIO BOOTLOADER",
-  "Copyright (C) 2026, Chirayu Mishra.",
+  "CHIRAYU-OS PORTFOLIO BOOTLOADER v2.26",
+  "Copyright (C) 2026, Chirayu Mishra. All rights reserved.",
   "--------------------------------------------------",
   "Loading verified profile metadata... OK",
   "Mounting project workspace: chirayu_portfolio_os... OK",
-  "Preparing resume viewer... OK",
-  "Preparing contact form and notification center... OK",
-  "Preparing GitHub data adapter... OK",
-  "Preparing command palette and terminal shortcuts... OK",
-  "Preparing accessibility and reduced-motion preferences... OK",
-  "Preparing desktop window manager... OK",
+  "Preparing responsive interactive CV viewer... OK",
+  "Preparing contact client & notification center... OK",
+  "Preparing GitHub data adapter & analytics... OK",
+  "Preparing command palette & mobile app launcher... OK",
+  "Preparing accessibility & reduced-motion rules... OK",
+  "Mounting window manager sheets & dock... OK",
   "--------------------------------------------------",
   "PORTFOLIO DESKTOP READY.",
-  "CONTINUE TO PROFILE HIGHLIGHTS."
+  "CONTINUE TO DESKTOP INTERFACE."
 ];
 
 export default function StartupSequence() {
@@ -45,7 +45,7 @@ export default function StartupSequence() {
           setCurrentStep("login");
         }, 800);
       }
-    }, 150);
+    }, 120);
 
     return () => clearInterval(interval);
   }, [playSound]);
@@ -56,7 +56,7 @@ export default function StartupSequence() {
     playSound("boot");
     setTimeout(() => {
       setBootState("desktop");
-    }, 1500);
+    }, 1200);
   };
 
   const handleSkipBoot = () => {
@@ -65,83 +65,83 @@ export default function StartupSequence() {
   };
 
   return (
-    <div className="fixed inset-0 z-[99999] bg-black text-green-500 font-mono text-sm overflow-hidden flex flex-col p-6 select-text">
+    <div className="fixed inset-0 z-[99999] bg-black text-green-500 font-mono text-xs sm:text-sm overflow-hidden flex flex-col p-4 sm:p-6 select-text">
       {currentStep === "bios" ? (
-        <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col justify-between">
-          <div className="space-y-1.5 overflow-y-auto max-h-[85vh] pr-2">
+        <div className="max-w-3xl mx-auto w-full flex-1 flex flex-col justify-between">
+          <div className="space-y-1.5 overflow-y-auto max-h-[82dvh] pr-2 scrollbar-none font-mono">
             {logs.map((log, idx) => (
               <div key={idx} className="flex items-start gap-2">
                 {idx === logs.length - 1 && log !== BIOS_LOGS[BIOS_LOGS.length - 1] ? (
-                  <span className="w-2 h-4 bg-green-500 animate-ping inline-block shrink-0" />
+                  <span className="w-1.5 h-3.5 bg-green-500 animate-ping inline-block shrink-0" />
                 ) : null}
                 <p className="leading-relaxed whitespace-pre-wrap">{log}</p>
               </div>
             ))}
           </div>
           
-          <div className="border-t border-green-900/50 pt-4 flex flex-col sm:flex-row gap-3 sm:items-center justify-between text-xs text-green-700">
-            <div className="flex items-center gap-4">
-              <span className="flex items-center gap-1"><Cpu size={14} /> Portfolio Shell</span>
-              <span className="flex items-center gap-1"><Shield size={14} /> SSL SECURED</span>
-            </div>
+          <div className="border-t border-green-900/60 pt-3 flex flex-row items-center justify-between text-[11px] text-green-700 select-none">
             <div className="flex items-center gap-3">
+              <span className="flex items-center gap-1"><Cpu size={13} /> OS Boot</span>
+              <span className="hidden sm:flex items-center gap-1"><Shield size={13} /> SECURED</span>
+            </div>
+            <div className="flex items-center gap-2 sm:gap-3">
               <button 
                 onClick={toggleSoundMuted} 
-                className="flex items-center gap-1 hover:text-green-500 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
+                className="touch-target flex items-center gap-1 hover:text-green-400 transition-colors sm:min-h-0 sm:min-w-0"
               >
                 {soundMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
-                {soundMuted ? "UNMUTE AUDIO" : "MUTE AUDIO"}
+                <span className="hidden sm:inline">{soundMuted ? "UNMUTE" : "MUTE"}</span>
               </button>
               <button
                 onClick={handleSkipBoot}
-                className="flex items-center gap-1 rounded border border-green-900/70 px-2 py-1 text-green-500 hover:bg-green-950/40 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-500"
+                className="touch-target flex items-center gap-1 rounded-xl border border-green-900 px-3 py-1.5 text-green-400 hover:bg-green-950/60 transition-colors active:scale-95 sm:min-h-0 sm:min-w-0 font-bold"
               >
-                <FastForward size={14} />
-                SKIP BOOT
+                <FastForward size={13} />
+                <span>SKIP</span>
               </button>
             </div>
           </div>
         </div>
       ) : (
-        <div className="flex-1 flex items-center justify-center bg-radial-gradient">
+        <div className="flex-1 flex items-center justify-center p-2">
           <form 
             onSubmit={handleLogin}
-            className="w-full max-w-sm p-8 rounded-2xl bg-zinc-900/80 border border-zinc-800 backdrop-blur-xl shadow-2xl flex flex-col items-center space-y-6 text-zinc-200"
+            className="w-full max-w-sm p-6 sm:p-8 rounded-3xl bg-zinc-900/90 border border-zinc-800 backdrop-blur-2xl shadow-2xl flex flex-col items-center space-y-5 text-zinc-200"
           >
-            {/* User Avatar Group */}
+            {/* User Avatar */}
             <div className="relative group">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center p-1 shadow-xl">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center p-1 shadow-xl">
                 <div className="w-full h-full rounded-full bg-zinc-950 flex items-center justify-center overflow-hidden">
-                  <span className="text-3xl font-bold bg-gradient-to-r from-indigo-400 to-pink-400 bg-clip-text text-transparent">{profile.initials}</span>
+                  <span className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-indigo-400 to-pink-400 bg-clip-text text-transparent">{profile.initials}</span>
                 </div>
               </div>
-              <div className="absolute inset-0 rounded-full bg-indigo-500/20 blur-md -z-10 group-hover:bg-indigo-500/30 transition-all duration-300" />
+              <div className="absolute inset-0 rounded-full bg-indigo-500/20 blur-md -z-10" />
             </div>
 
             <div className="text-center space-y-1">
-              <h2 className="text-xl font-semibold tracking-wide text-zinc-100 font-sans">Chirayu OS</h2>
-              <p className="text-xs text-zinc-500 font-sans">Portfolio Desktop • Opens with profile highlights</p>
+              <h2 className="text-xl font-bold tracking-wide text-zinc-100 font-sans">Chirayu OS</h2>
+              <p className="text-xs text-zinc-400 font-sans">Interactive Portfolio Desktop</p>
             </div>
 
             {/* Credentials Fields */}
-            <div className="w-full space-y-3">
+            <div className="w-full space-y-2.5 font-sans">
               <div className="space-y-1">
-                <label className="text-xs text-zinc-500 font-sans">Username</label>
+                <label className="text-[11px] text-zinc-400 font-semibold">User Account</label>
                 <input 
                   type="text" 
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full bg-zinc-950/80 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-300 focus:outline-none focus:border-indigo-500/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 transition-colors"
+                  className="touch-target w-full bg-zinc-950/80 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs text-zinc-500 font-sans">Password</label>
+                <label className="text-[11px] text-zinc-400 font-semibold">Password (Demo)</label>
                 <input 
                   type="password" 
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-zinc-950/80 border border-zinc-800 rounded-lg px-3 py-2 text-zinc-300 focus:outline-none focus:border-indigo-500/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 transition-colors"
+                  className="touch-target w-full bg-zinc-950/80 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-indigo-500"
                 />
               </div>
             </div>
@@ -150,7 +150,7 @@ export default function StartupSequence() {
             <button
               type="submit"
               disabled={isLoggingIn}
-              className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-lg py-2.5 font-semibold text-sm transition-all duration-200 shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500"
+              className="touch-target w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl py-3 font-bold text-xs transition-all duration-200 shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2 active:scale-95"
             >
               {isLoggingIn ? (
                 <div className="flex items-center gap-1.5">
@@ -160,8 +160,8 @@ export default function StartupSequence() {
                 </div>
               ) : (
                 <>
-                  <Play size={16} fill="currentColor" />
-                  <span>BOOT DESKTOP</span>
+                  <Play size={14} fill="currentColor" />
+                  <span>LOGIN TO DESKTOP</span>
                 </>
               )}
             </button>

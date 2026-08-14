@@ -44,8 +44,8 @@ async function fetchQuote() {
     console.log(\`Quote: "\${data.quote}"\`);
     console.log(\`Author: \${data.author}\`);
   } catch (error) {
-    console.log("Fetch failed, fallback offline quote:");
-    console.log('"Code is like humor. When you have to explain it, it’s bad." - Cory House');
+    console.log("Fallback quote:");
+    console.log('"Code is like humor. When you have to explain it, it is bad." - Cory House');
   }
 }
 
@@ -61,9 +61,9 @@ export default function PlaygroundApp() {
   const [consoleLogs, setConsoleLogs] = useState<{ type: "log" | "error" | "info"; text: string }[]>([]);
   const [execTime, setExecTime] = useState<number | null>(null);
   const [isRunning, setIsRunning] = useState(false);
+  const [mobileTab, setMobileTab] = useState<"editor" | "console">("editor");
   const sandboxRef = useRef<HTMLIFrameElement>(null);
 
-  // Setup Secure Execution Iframe Listener
   useEffect(() => {
     const handleSandboxMessage = (e: MessageEvent) => {
       const msg = e.data;
@@ -91,8 +91,8 @@ export default function PlaygroundApp() {
     setConsoleLogs([{ type: "info", text: "Compiling and executing code in sandbox..." }]);
     setIsRunning(true);
     setExecTime(null);
+    setMobileTab("console");
 
-    // post run message to iframe
     if (sandboxRef.current && sandboxRef.current.contentWindow) {
       sandboxRef.current.contentWindow.postMessage({ type: "run", code }, "*");
     }
@@ -121,8 +121,8 @@ export default function PlaygroundApp() {
   const monacoTheme = theme === "githublight" || theme === "minimalwhite" ? "vs-light" : "vs-dark";
 
   return (
-    <div className="flex h-full w-full flex-col text-zinc-300 select-text md:flex-row">
-      {/* Dynamic Sandbox Iframe (Securely Hidden) */}
+    <div className="flex h-full w-full flex-col text-zinc-300 select-text md:flex-row font-sans">
+      {/* Hidden Execution Sandbox Iframe */}
       <iframe
         ref={sandboxRef}
         className="hidden"
@@ -161,66 +161,93 @@ export default function PlaygroundApp() {
       />
 
       {/* Sidebar Controls */}
-      <div className="flex w-full shrink-0 flex-col gap-3 border-b border-sys-border bg-zinc-950/60 p-3 font-sans select-none md:w-48 md:justify-between md:border-b-0 md:border-r md:p-4">
-        <div className="space-y-3 md:space-y-4">
-          <div className="flex items-center gap-2 text-sys-accent border-b border-sys-border pb-2.5">
-            <Code size={16} />
-            <span className="text-xs font-bold uppercase tracking-wider">Playground</span>
+      <div className="flex w-full shrink-0 flex-col gap-2.5 border-b border-sys-border bg-zinc-950/70 p-3 font-sans select-none md:w-52 md:justify-between md:border-b-0 md:border-r md:p-4">
+        <div className="space-y-2.5 md:space-y-4">
+          <div className="flex items-center justify-between border-b border-sys-border pb-2">
+            <div className="flex items-center gap-2 text-sys-accent">
+              <Code size={16} />
+              <span className="text-xs font-bold uppercase tracking-wider">JS Sandbox</span>
+            </div>
+
+            {/* Mobile Tab Switcher */}
+            <div className="flex items-center gap-1 p-0.5 rounded-lg bg-zinc-900 border border-sys-border md:hidden">
+              <button
+                onClick={() => setMobileTab("editor")}
+                className={clsx(
+                  "px-2 py-1 rounded text-[10px] font-bold uppercase",
+                  mobileTab === "editor" ? "bg-sys-accent text-zinc-950" : "text-zinc-400"
+                )}
+              >
+                Code
+              </button>
+              <button
+                onClick={() => setMobileTab("console")}
+                className={clsx(
+                  "px-2 py-1 rounded text-[10px] font-bold uppercase flex items-center gap-1",
+                  mobileTab === "console" ? "bg-sys-accent text-zinc-950" : "text-zinc-400"
+                )}
+              >
+                Logs
+                {consoleLogs.length > 0 && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                )}
+              </button>
+            </div>
           </div>
 
           {/* Code Templates */}
           <div className="space-y-1.5">
-            <span className="text-[10px] uppercase font-bold text-zinc-500 tracking-wide">Templates</span>
-            <div className="flex gap-2 overflow-x-auto scrollbar-none md:block md:space-y-1.5 md:overflow-visible">
+            <span className="text-[9.5px] uppercase font-bold text-zinc-500 tracking-wide">Templates</span>
+            <div className="flex gap-1.5 overflow-x-auto scrollbar-none md:block md:space-y-1.5 md:overflow-visible">
               <button
                 onClick={() => loadTemplate("basic")}
-                className="shrink-0 rounded border border-sys-border bg-zinc-900/40 px-3 py-2 text-left text-xs text-zinc-300 transition-colors hover:bg-zinc-900 md:w-full md:py-1.5"
+                className="shrink-0 rounded-xl border border-sys-border bg-zinc-900/60 px-3 py-1.5 text-left text-xs text-zinc-300 transition-colors hover:bg-zinc-850 active:scale-95 md:w-full md:rounded-lg"
               >
                 Hello Profile
               </button>
               <button
                 onClick={() => loadTemplate("fibonacci")}
-                className="shrink-0 rounded border border-sys-border bg-zinc-900/40 px-3 py-2 text-left text-xs text-zinc-300 transition-colors hover:bg-zinc-900 md:w-full md:py-1.5"
+                className="shrink-0 rounded-xl border border-sys-border bg-zinc-900/60 px-3 py-1.5 text-left text-xs text-zinc-300 transition-colors hover:bg-zinc-850 active:scale-95 md:w-full md:rounded-lg"
               >
-                Fibonacci Iteration
+                Fibonacci
               </button>
               <button
                 onClick={() => loadTemplate("async")}
-                className="shrink-0 rounded border border-sys-border bg-zinc-900/40 px-3 py-2 text-left text-xs text-zinc-300 transition-colors hover:bg-zinc-900 md:w-full md:py-1.5"
+                className="shrink-0 rounded-xl border border-sys-border bg-zinc-900/60 px-3 py-1.5 text-left text-xs text-zinc-300 transition-colors hover:bg-zinc-850 active:scale-95 md:w-full md:rounded-lg"
               >
-                Async API Call
+                Async API
               </button>
             </div>
           </div>
         </div>
 
-        {/* Execution actions */}
-        <div className="flex gap-2 md:flex-col">
+        {/* Action Controls */}
+        <div className="flex items-center gap-2 md:flex-col">
           <button
             onClick={handleRun}
             disabled={isRunning}
-            className="flex-1 flex items-center justify-center gap-2 py-2 rounded bg-green-600 hover:bg-green-500 text-white font-semibold text-xs transition-colors shadow-lg shadow-green-950/20 disabled:opacity-50"
+            className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-green-600 hover:bg-green-500 text-white font-bold text-xs transition-colors shadow-lg shadow-green-950/20 active:scale-95 disabled:opacity-50 md:w-full md:rounded-lg"
           >
-            <Play size={12} fill="currentColor" />
-            <span>{isRunning ? "RUNNING..." : "RUN CODE"}</span>
+            <Play size={13} fill="currentColor" />
+            <span>{isRunning ? "Running..." : "Run Code"}</span>
           </button>
           
           <button
             onClick={handleClear}
-            className="flex items-center justify-center gap-2 py-2 px-3 rounded bg-zinc-900 hover:bg-zinc-800 border border-sys-border text-xs transition-colors"
+            className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-sys-border text-xs transition-colors active:scale-95 md:w-full md:rounded-lg"
             title="Clear Console"
           >
-            <Trash2 size={12} />
-            <span className="md:hidden">Clear Logs</span>
+            <Trash2 size={13} />
+            <span className="hidden sm:inline md:inline">Clear Logs</span>
           </button>
 
           <button
             onClick={handleReset}
-            className="flex items-center justify-center gap-2 py-2 px-3 rounded bg-zinc-900 hover:bg-zinc-850 border border-sys-border text-xs transition-colors text-red-400"
-            title="Reset Code Template"
+            className="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-sys-border text-xs transition-colors text-red-400 active:scale-95 md:w-full md:rounded-lg"
+            title="Reset Template"
           >
-            <RotateCcw size={12} />
-            <span className="md:hidden">Reset Code</span>
+            <RotateCcw size={13} />
+            <span className="hidden sm:inline md:inline">Reset</span>
           </button>
         </div>
       </div>
@@ -228,7 +255,10 @@ export default function PlaygroundApp() {
       {/* Editor & Console Split View */}
       <div className="flex min-h-0 flex-1 flex-col md:min-w-0">
         {/* Editor Area */}
-        <div className="min-h-[220px] flex-1 border-b border-sys-border sm:min-h-[300px]">
+        <div className={clsx(
+          "min-h-[220px] flex-1 border-b border-sys-border",
+          mobileTab !== "editor" && "hidden md:block"
+        )}>
           <Editor
             height="100%"
             language="javascript"
@@ -248,7 +278,10 @@ export default function PlaygroundApp() {
         </div>
 
         {/* Console Logs Area */}
-        <div className="flex h-44 flex-col bg-zinc-950/80 p-4 text-xs select-text font-mono sm:h-52">
+        <div className={clsx(
+          "flex h-52 flex-col bg-zinc-950/90 p-3.5 text-xs select-text font-mono sm:h-56",
+          mobileTab !== "console" && "hidden md:flex"
+        )}>
           {/* Header info */}
           <div className="flex items-center justify-between border-b border-sys-border/50 pb-2 mb-2 text-zinc-500 select-none">
             <span className="flex items-center gap-1.5 font-sans font-semibold text-[10px] uppercase tracking-wider text-zinc-400">
@@ -271,15 +304,15 @@ export default function PlaygroundApp() {
                     "whitespace-pre-wrap leading-relaxed",
                     log.type === "info" && "text-zinc-500",
                     log.type === "error" && "text-red-400 border-l-2 border-red-500 pl-2",
-                    log.type === "log" && "text-zinc-300"
+                    log.type === "log" && "text-zinc-200 font-mono"
                   )}
                 >
                   {log.text}
                 </div>
               ))
             ) : (
-              <div className="h-full flex items-center justify-center text-zinc-600 font-sans text-xs select-none">
-                Write some script and click RUN CODE to output console logs here.
+              <div className="h-full flex items-center justify-center text-zinc-500 font-sans text-xs select-none">
+                Run JavaScript script above to view real-time console outputs.
               </div>
             )}
           </div>

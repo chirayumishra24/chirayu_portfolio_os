@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { useOSStore } from "../store/osStore";
 import { useSystemSound } from "../hooks/useSystemSound";
-import { ShieldCheck, Wifi, Battery, Command, Sparkles } from "lucide-react";
+import { ShieldCheck, Wifi, Battery, Command, Sparkles, Briefcase } from "lucide-react";
 
 // Desktop components
 import StartupSequence from "../components/desktop/StartupSequence";
@@ -23,7 +23,7 @@ const AppLoading = () => (
   </div>
 );
 
-// Applications are split out of the initial desktop shell bundle.
+// Applications split dynamically
 const AboutApp = dynamic(() => import("../components/apps/AboutApp"), { loading: AppLoading });
 const ProjectsApp = dynamic(() => import("../components/apps/ProjectsApp"), { loading: AppLoading });
 const SkillsApp = dynamic(() => import("../components/apps/SkillsApp"), { loading: AppLoading });
@@ -126,7 +126,6 @@ export default function Home() {
   useEffect(() => {
     if (!mounted) return;
     const body = document.body;
-    // Remove existing theme classes
     const classes = body.className.split(" ").filter((c) => !c.startsWith("theme-"));
     body.className = [...classes, `theme-${theme}`].join(" ");
   }, [theme, mounted]);
@@ -138,10 +137,9 @@ export default function Home() {
       const latest = achievements[achievements.length - 1];
       const description = ACHIEVEMENT_DESCRIPTIONS[latest] || "Secret milestone unlocked!";
       
-      // Push system notification which triggers toast
       useOSStore.getState().pushNotification({
         type: "achievement",
-        title: `🏆 Achievement Unlocked: ${latest}`,
+        title: `🏆 Achievement: ${latest}`,
         message: description,
       });
 
@@ -187,30 +185,39 @@ export default function Home() {
       <div className="absolute inset-0 bg-gradient-to-tr opacity-25 mix-blend-overlay pointer-events-none" />
 
       {/* Top Menu / System Navigation Bar */}
-      <div className="fixed left-0 top-0 z-[9998] flex h-[var(--topbar-height)] w-full items-center justify-between gap-2 bg-sys-taskbar px-3 text-xs font-medium backdrop-blur-xl border-b border-sys-border select-none sm:px-6">
+      <div className="fixed left-0 top-0 z-[9998] flex h-[calc(var(--topbar-height)+var(--safe-top))] pt-[var(--safe-top)] w-full items-center justify-between gap-2 bg-sys-taskbar px-3 text-xs font-medium backdrop-blur-xl border-b border-sys-border select-none sm:px-6">
         {/* Left: System Actions */}
-        <div className="flex min-w-0 items-center gap-3 sm:gap-5">
+        <div className="flex min-w-0 items-center gap-2.5 sm:gap-4">
           <button 
             onClick={() => { playSound("click"); setCommandPaletteOpen(!commandPaletteOpen); }}
-            className="flex items-center gap-1.5 font-bold text-zinc-100 hover:text-sys-accent transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sys-accent rounded"
+            className="flex items-center gap-1.5 font-bold text-zinc-100 hover:text-sys-accent transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sys-accent rounded px-1.5 py-1 active:scale-95"
           >
-            <Sparkles size={13} className="text-sys-accent animate-pulse" />
-            <span className="truncate">ChirayuOS</span>
+            <Sparkles size={14} className="text-sys-accent animate-pulse" />
+            <span className="truncate text-xs font-bold">ChirayuOS</span>
+          </button>
+
+          {/* Quick Recruiter Mode button on Mobile / Desktop */}
+          <button
+            onClick={() => { playSound("click"); window.dispatchEvent(new Event("open-recruiter-mode")); }}
+            className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-sys-accent/15 border border-sys-accent/30 text-[10px] font-bold uppercase tracking-wider text-sys-accent hover:bg-sys-accent/25 transition-all active:scale-95"
+            title="Recruiter Fast Overview"
+          >
+            <Briefcase size={11} />
+            <span className="hidden min-[360px]:inline">Recruiter</span>
           </button>
           
-          <div className="hidden md:flex items-center gap-4 text-sys-text-secondary">
-            <button onClick={() => { playSound("click"); useOSStore.getState().openWindow("about"); }} className="hover:text-sys-text-primary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sys-accent rounded">About</button>
-            <button onClick={() => { playSound("click"); window.dispatchEvent(new Event("open-recruiter-mode")); }} className="hover:text-sys-text-primary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sys-accent rounded">Recruiter Mode</button>
-            <button onClick={() => { playSound("click"); setCommandPaletteOpen(true); }} className="hover:text-sys-text-primary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sys-accent rounded">Find</button>
-            <button onClick={() => { playSound("click"); useOSStore.getState().openWindow("settings"); }} className="hover:text-sys-text-primary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sys-accent rounded">Preferences</button>
-            <button onClick={() => { playSound("click"); useOSStore.getState().openWindow("terminal"); }} className="hover:text-sys-text-primary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sys-accent rounded">Developer Shell</button>
+          <div className="hidden lg:flex items-center gap-4 text-sys-text-secondary">
+            <button onClick={() => { playSound("click"); useOSStore.getState().openWindow("about"); }} className="hover:text-sys-text-primary transition-colors">About</button>
+            <button onClick={() => { playSound("click"); setCommandPaletteOpen(true); }} className="hover:text-sys-text-primary transition-colors">Find</button>
+            <button onClick={() => { playSound("click"); useOSStore.getState().openWindow("settings"); }} className="hover:text-sys-text-primary transition-colors">Preferences</button>
+            <button onClick={() => { playSound("click"); useOSStore.getState().openWindow("terminal"); }} className="hover:text-sys-text-primary transition-colors">Developer Shell</button>
           </div>
         </div>
 
-        {/* Center: Live Command Hint */}
+        {/* Center: Live Command Hint (Desktop only) */}
         <button 
           onClick={() => { playSound("click"); setCommandPaletteOpen(true); }}
-          className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-md bg-zinc-950/30 hover:bg-zinc-950/60 border border-sys-border/60 hover:border-sys-border-active transition-all text-[11px] text-sys-text-secondary hover:text-sys-text-primary group focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sys-accent"
+          className="hidden md:flex items-center gap-1.5 px-3 py-1 rounded-md bg-zinc-950/30 hover:bg-zinc-950/60 border border-sys-border/60 hover:border-sys-border-active transition-all text-[11px] text-sys-text-secondary hover:text-sys-text-primary group"
         >
           <Command size={11} className="group-hover:scale-105 transition-transform" />
           <span>Press</span>
@@ -219,47 +226,40 @@ export default function Home() {
         </button>
 
         {/* Right: Quick Indicators */}
-        <div className="flex shrink-0 items-center gap-2 text-sys-text-secondary sm:gap-4">
+        <div className="flex shrink-0 items-center gap-2 text-sys-text-secondary sm:gap-3">
           <div className="hidden items-center gap-1 sm:flex">
             <Wifi size={13} className="text-emerald-500" />
-            <span className="text-[10px] font-semibold tracking-wider font-mono hidden sm:inline">{networkSpeed}</span>
+            <span className="text-[10px] font-semibold tracking-wider font-mono hidden md:inline">{networkSpeed}</span>
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1">
             <Battery 
-              size={14} 
+              size={13} 
               className={
                 isCharging 
                   ? "text-amber-400 animate-pulse" 
                   : (parseInt(batteryLevel) < 20 ? "text-red-500 animate-bounce" : "text-emerald-500")
               } 
             />
-            <span className="text-[10px] font-semibold tracking-wider font-mono hidden sm:inline">
+            <span className="text-[10px] font-semibold tracking-wider font-mono hidden min-[400px]:inline">
               {isCharging ? `⚡ ${batteryLevel}` : batteryLevel}
             </span>
           </div>
-          <div className="hidden items-center gap-1 sm:flex">
+          <div className="hidden items-center gap-1 md:flex">
             <ShieldCheck size={13} className="text-emerald-500" />
-            <span className="text-[10px] font-bold uppercase tracking-wider font-sans hidden sm:inline">SYS_OK</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider font-sans">SYS_OK</span>
           </div>
           <NotificationCenter />
         </div>
       </div>
 
-      <button
-        type="button"
-        onClick={() => { playSound("click"); window.dispatchEvent(new Event("open-recruiter-mode")); }}
-        className="fixed left-3 top-[calc(var(--topbar-height)+0.5rem)] z-[55] rounded-full border border-sys-border bg-zinc-950/80 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-sys-accent shadow-lg backdrop-blur-xl transition-colors hover:border-sys-border-active sm:hidden"
-      >
-        Recruiter Mode
-      </button>
-
       {/* Desktop Grid Icons */}
       <DesktopGrid />
 
+      {/* Recruiter Mode Executive Summary Panel */}
       <RecruiterModePanel />
 
       {/* Window Manager Workspace */}
-      <div className="pointer-events-none absolute inset-0 h-full w-full overflow-hidden pt-[var(--topbar-height)] pb-[calc(var(--dock-height)+var(--safe-bottom))]">
+      <div className="pointer-events-none absolute inset-0 h-full w-full overflow-hidden pt-[calc(var(--topbar-height)+var(--safe-top))] pb-[calc(var(--dock-height)+var(--safe-bottom))]">
         <div className="relative w-full h-full pointer-events-none">
           {/* About App */}
           <WindowFrame id="about">
@@ -337,10 +337,10 @@ export default function Home() {
       {/* Command Palette (Raycast style) */}
       <CommandPalette />
 
-      {/* AI Chat Assistant (Clippy-style) */}
+      {/* AI Chat Assistant */}
       <AIChatAssistant />
 
-      {/* Notification Toasts (top-right) */}
+      {/* Notification Toasts */}
       <NotificationToasts />
 
     </div>

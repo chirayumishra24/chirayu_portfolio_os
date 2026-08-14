@@ -75,7 +75,6 @@ export const useSystemSound = () => {
         osc2.stop(ctx.currentTime + 0.3);
       } else if (type === "achievement") {
         const now = ctx.currentTime;
-        // Rising pentatonic arpeggio (C major pentatonic: C, D, E, G, A, C)
         const notes = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25];
         notes.forEach((freq, idx) => {
           const osc = ctx.createOscillator();
@@ -88,8 +87,7 @@ export const useSystemSound = () => {
       } else if (type === "boot") {
         const now = ctx.currentTime;
         const baseFreq = 130.81; // C3
-        // Warm synth minor 9th / major 9th chord
-        const chord = [1, 1.2, 1.5, 1.875, 2.25]; // C, Eb, G, Bb, D (C minor 9th)
+        const chord = [1, 1.2, 1.5, 1.875, 2.25];
         chord.forEach((mult, idx) => {
           const osc = ctx.createOscillator();
           osc.type = "sawtooth";
@@ -107,8 +105,20 @@ export const useSystemSound = () => {
           osc.stop(now + 2.0);
         });
       }
-    } catch (e) {
-      console.warn("AudioContext failed:", e);
+    } catch {
+      // Ignore audio synthesis errors on autoplay blocks
+    }
+
+    // Trigger subtle haptic vibration on supported devices
+    if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+      try {
+        if (type === "click") navigator.vibrate(8);
+        else if (type === "success") navigator.vibrate([10, 30, 15]);
+        else if (type === "error") navigator.vibrate([20, 50, 20]);
+        else if (type === "achievement") navigator.vibrate([15, 40, 20, 40, 30]);
+      } catch {
+        // Ignore vibration errors
+      }
     }
   };
 

@@ -45,9 +45,9 @@ export default function SettingsApp() {
 
   const tabs: { id: SettingsTab; label: string; icon: React.ReactNode }[] = [
     { id: "appearance", label: "Appearance", icon: <Paintbrush size={14} /> },
-    { id: "audio", label: "Audio", icon: <Volume2 size={14} /> },
+    { id: "audio", label: "Audio & Sounds", icon: <Volume2 size={14} /> },
     { id: "accessibility", label: "Accessibility", icon: <Accessibility size={14} /> },
-    { id: "developer", label: "Developer", icon: <Code size={14} /> },
+    { id: "developer", label: "System & State", icon: <Code size={14} /> },
     { id: "achievements", label: "Achievements", icon: <Trophy size={14} /> },
   ];
 
@@ -98,10 +98,10 @@ export default function SettingsApp() {
 
   return (
     <div className="flex h-full w-full flex-col text-zinc-300 select-none font-sans md:flex-row">
-      {/* Sidebar Navigation */}
-      <div className="flex w-full shrink-0 gap-2 overflow-x-auto border-b border-sys-border bg-zinc-950/60 p-3 scrollbar-none md:w-48 md:flex-col md:overflow-visible md:border-b-0 md:border-r">
-        <div className="hidden items-center gap-2 text-sys-accent border-b border-sys-border pb-2.5 mb-2 md:flex">
-          <Settings size={14} />
+      {/* Sidebar Navigation / Horizontal Pills on Mobile */}
+      <div className="flex w-full shrink-0 gap-1.5 overflow-x-auto border-b border-sys-border bg-zinc-950/70 p-2.5 scrollbar-none md:w-52 md:flex-col md:overflow-visible md:border-b-0 md:border-r md:p-3">
+        <div className="hidden items-center gap-2 text-sys-accent border-b border-sys-border pb-2 mb-2 md:flex">
+          <Settings size={15} />
           <span className="text-[10px] font-bold uppercase tracking-wider">Preferences</span>
         </div>
 
@@ -110,10 +110,10 @@ export default function SettingsApp() {
             key={tab.id}
             onClick={() => { playSound("click"); setActiveTab(tab.id); }}
             className={clsx(
-              "flex shrink-0 items-center gap-2.5 rounded-lg px-3 py-2 text-xs transition-colors",
+              "flex shrink-0 items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold transition-colors active:scale-95 md:w-full md:rounded-lg",
               activeTab === tab.id
-                ? "bg-sys-accent/15 text-sys-accent border border-sys-accent/20"
-                : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200"
+                ? "bg-sys-accent/15 text-sys-accent border border-sys-accent/30 font-bold"
+                : "text-zinc-400 hover:bg-zinc-900/60 hover:text-zinc-200 border border-transparent"
             )}
           >
             {tab.icon}
@@ -123,15 +123,15 @@ export default function SettingsApp() {
       </div>
 
       {/* Settings Content */}
-      <div className="min-h-0 flex-1 overflow-y-auto p-4 scrollbar-thin sm:p-6">
+      <div className="min-h-0 flex-1 overflow-y-auto p-4 scrollbar-thin sm:p-6 overscroll-contain">
         {activeTab === "appearance" && (
-          <div className="space-y-6">
-            <div className="space-y-1.5 border-b border-sys-border pb-4">
+          <div className="space-y-5">
+            <div className="space-y-1 border-b border-sys-border pb-3">
               <h3 className="text-sm font-bold text-zinc-100">Desktop Theme</h3>
-              <p className="text-xs text-sys-text-secondary">Select a visual theme. Changes apply instantly across all windows and system components.</p>
+              <p className="text-xs text-sys-text-secondary">Select an OS theme. Colors update across all windows instantly.</p>
             </div>
 
-            <div className="grid grid-cols-1 gap-3 min-[380px]:grid-cols-2 sm:grid-cols-3">
+            <div className="grid grid-cols-1 gap-2.5 min-[380px]:grid-cols-2 sm:grid-cols-3">
               {themes.map((t) => (
                 <button
                   key={t.name}
@@ -140,21 +140,25 @@ export default function SettingsApp() {
                     setTheme(t.name);
                     pushNotification({
                       type: "info",
-                      title: "Theme Changed",
-                      message: `System appearance theme switched to ${t.label}.`
+                      title: "Theme Applied",
+                      message: `System theme changed to ${t.label}.`
                     });
                   }}
                   className={clsx(
-                    "p-3 rounded-xl border flex items-center gap-3 transition-all duration-200 hover:shadow-lg",
+                    "p-3 rounded-2xl border flex items-center gap-3 transition-all duration-150 hover:shadow-lg active:scale-95",
                     theme === t.name
-                      ? "border-sys-accent bg-sys-accent/10 shadow-md shadow-sys-accent/10"
-                      : "border-sys-border hover:border-zinc-600 bg-zinc-950/20"
+                      ? "border-sys-accent bg-sys-accent/15 shadow-md shadow-sys-accent/10"
+                      : "border-sys-border hover:border-zinc-600 bg-zinc-950/30"
                   )}
                 >
-                  <div className={clsx("w-8 h-8 rounded-lg shrink-0 shadow", t.preview)} />
-                  <div className="text-left">
-                    <span className="text-xs font-semibold text-zinc-200">{t.label}</span>
-                    {theme === t.name && <span className="block text-[9px] text-sys-accent font-bold mt-0.5">Active</span>}
+                  <div className={clsx("w-8 h-8 rounded-xl shrink-0 shadow border border-white/10", t.preview)} />
+                  <div className="text-left min-w-0">
+                    <span className="text-xs font-bold text-zinc-200 block truncate">{t.label}</span>
+                    {theme === t.name ? (
+                      <span className="text-[9.5px] text-sys-accent font-bold">Active</span>
+                    ) : (
+                      <span className="text-[9.5px] text-zinc-500">Select</span>
+                    )}
                   </div>
                 </button>
               ))}
@@ -163,32 +167,32 @@ export default function SettingsApp() {
         )}
 
         {activeTab === "audio" && (
-          <div className="space-y-6">
-            <div className="space-y-1.5 border-b border-sys-border pb-4">
+          <div className="space-y-5">
+            <div className="space-y-1 border-b border-sys-border pb-3">
               <h3 className="text-sm font-bold text-zinc-100">Sound & Audio</h3>
-              <p className="text-xs text-sys-text-secondary">Control system sounds, UI feedback, and music playback volume.</p>
+              <p className="text-xs text-sys-text-secondary">Configure system audio cues, haptic vibrations, and playback volume.</p>
             </div>
 
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold">System Sounds</span>
+              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-zinc-950/40 border border-sys-border">
+                <span className="text-xs font-bold text-zinc-200">System Sound Effects</span>
                 <button
                   onClick={() => { toggleSoundMuted(); playSound("click"); }}
                   className={clsx(
-                    "py-1.5 px-4 rounded-lg text-xs font-bold border transition-colors",
+                    "py-1.5 px-4 rounded-xl text-xs font-bold border transition-colors active:scale-95",
                     soundMuted
                       ? "bg-red-950/40 border-red-500/30 text-red-400"
                       : "bg-emerald-950/40 border-emerald-500/30 text-emerald-400"
                   )}
                 >
-                  {soundMuted ? "Muted" : "Enabled"}
+                  {soundMuted ? "Muted" : "Active"}
                 </button>
               </div>
 
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs text-sys-text-secondary">
-                  <span>Master Volume</span>
-                  <span className="font-mono">{soundVolume}%</span>
+              <div className="space-y-2 p-3.5 rounded-2xl bg-zinc-950/40 border border-sys-border">
+                <div className="flex items-center justify-between text-xs text-zinc-300">
+                  <span className="font-bold">Master Volume</span>
+                  <span className="font-mono text-sys-accent font-bold">{soundVolume}%</span>
                 </div>
                 <input
                   type="range"
@@ -200,94 +204,95 @@ export default function SettingsApp() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-2 pt-2 sm:grid-cols-3">
-                {(["boot", "click", "success", "error", "theme", "achievement"] satisfies SystemSoundType[]).map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => playSound(s)}
-                    className="py-2 px-3 rounded-lg bg-zinc-900/40 hover:bg-zinc-900 border border-sys-border text-xs font-semibold transition-colors"
-                  >
-                    ▶ {s[0].toUpperCase() + s.slice(1)}
-                  </button>
-                ))}
+              <div className="space-y-2">
+                <span className="text-[10px] uppercase font-bold text-zinc-400 tracking-wider">Test Audio Cues</span>
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                  {(["boot", "click", "success", "error", "theme", "achievement"] satisfies SystemSoundType[]).map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => playSound(s)}
+                      className="py-2.5 px-3 rounded-xl bg-zinc-900/60 hover:bg-zinc-900 border border-sys-border text-xs font-semibold transition-colors active:scale-95 text-zinc-300"
+                    >
+                      ▶ {s[0].toUpperCase() + s.slice(1)}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         )}
 
         {activeTab === "accessibility" && (
-          <div className="space-y-6">
-            <div className="space-y-1.5 border-b border-sys-border pb-4">
+          <div className="space-y-5">
+            <div className="space-y-1 border-b border-sys-border pb-3">
               <h3 className="text-sm font-bold text-zinc-100">Accessibility</h3>
-              <p className="text-xs text-sys-text-secondary">Adjust settings for improved readability and navigation.</p>
+              <p className="text-xs text-sys-text-secondary">Accessibility and navigation assistance.</p>
             </div>
             <div className="space-y-3 text-xs text-sys-text-secondary">
-              <div className="p-4 bg-zinc-950/40 rounded-xl border border-sys-border space-y-2">
-                <h4 className="font-bold text-zinc-200 flex items-center gap-1.5"><Eye size={13} /> Visual Preferences</h4>
-                <p>Keyboard shortcut support is enabled by default. All windows support Tab and Arrow navigation. Use <kbd className="px-1 py-0.5 bg-zinc-900 border border-zinc-700 rounded text-[10px]">Ctrl+Shift+P</kbd> for the command palette.</p>
+              <div className="p-4 bg-zinc-950/40 rounded-2xl border border-sys-border space-y-2">
+                <h4 className="font-bold text-zinc-200 flex items-center gap-1.5"><Eye size={13} className="text-sys-accent" /> Keyboard Navigation</h4>
+                <p className="leading-relaxed">Full keyboard shortcuts enabled: <kbd className="px-1.5 py-0.5 bg-zinc-900 border border-zinc-700 rounded text-[10px]">Ctrl+K</kbd> / <kbd className="px-1.5 py-0.5 bg-zinc-900 border border-zinc-700 rounded text-[10px]">Ctrl+Shift+P</kbd> opens Command Palette. <kbd className="px-1.5 py-0.5 bg-zinc-900 border border-zinc-700 rounded text-[10px]">Esc</kbd> closes active dialogs.</p>
               </div>
-              <div className="p-4 bg-zinc-950/40 rounded-xl border border-sys-border space-y-2">
-                <h4 className="font-bold text-zinc-200 flex items-center gap-1.5"><Monitor size={13} /> Reduced Motion</h4>
-                <p>Animations respect <code>prefers-reduced-motion</code> media queries. Use GitHub Light or Minimal White themes for maximum contrast.</p>
+              <div className="p-4 bg-zinc-950/40 rounded-2xl border border-sys-border space-y-2">
+                <h4 className="font-bold text-zinc-200 flex items-center gap-1.5"><Monitor size={13} className="text-sys-accent" /> Motion & Contrast</h4>
+                <p className="leading-relaxed">Animations adapt to system reduced-motion settings. High-contrast theme options available (GitHub Light, Minimal White).</p>
               </div>
             </div>
           </div>
         )}
 
         {activeTab === "developer" && (
-          <div className="space-y-6">
-            <div className="space-y-1.5 border-b border-sys-border pb-4">
-              <h3 className="text-sm font-bold text-zinc-100">Developer Options</h3>
-              <p className="text-xs text-sys-text-secondary">Manage settings data, reset preferences, and import/export configuration.</p>
+          <div className="space-y-5">
+            <div className="space-y-1 border-b border-sys-border pb-3">
+              <h3 className="text-sm font-bold text-zinc-100">System State & Backup</h3>
+              <p className="text-xs text-sys-text-secondary">Import or export your configuration and unlock states.</p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <button onClick={handleExportSettings} className="p-4 rounded-xl bg-zinc-950/20 border border-sys-border hover:border-sys-accent flex flex-col items-center gap-2 transition-colors">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              <button onClick={handleExportSettings} className="p-4 rounded-2xl bg-zinc-950/30 border border-sys-border hover:border-sys-accent flex flex-col items-center gap-2 transition-colors active:scale-95">
                 <Download size={20} className="text-sys-accent" />
-                <span className="text-xs font-semibold">Export Settings</span>
+                <span className="text-xs font-bold text-zinc-200">Export Config</span>
               </button>
-              <button onClick={handleImportSettings} className="p-4 rounded-xl bg-zinc-950/20 border border-sys-border hover:border-sys-accent flex flex-col items-center gap-2 transition-colors">
+              <button onClick={handleImportSettings} className="p-4 rounded-2xl bg-zinc-950/30 border border-sys-border hover:border-sys-accent flex flex-col items-center gap-2 transition-colors active:scale-95">
                 <Upload size={20} className="text-sys-accent" />
-                <span className="text-xs font-semibold">Import Settings</span>
+                <span className="text-xs font-bold text-zinc-200">Import Config</span>
               </button>
-              <button onClick={handleResetAll} className="p-4 rounded-xl bg-red-950/10 border border-red-500/20 hover:border-red-500/50 flex flex-col items-center gap-2 transition-colors">
+              <button onClick={handleResetAll} className="p-4 rounded-2xl bg-red-950/20 border border-red-500/30 hover:border-red-500/60 flex flex-col items-center gap-2 transition-colors active:scale-95">
                 <RotateCcw size={20} className="text-red-400" />
-                <span className="text-xs font-semibold text-red-400">Factory Reset</span>
+                <span className="text-xs font-bold text-red-400">Factory Reset</span>
               </button>
             </div>
 
-            <div className="p-4 bg-zinc-950/40 rounded-xl border border-sys-border text-xs text-sys-text-secondary space-y-1.5 font-mono">
+            <div className="p-4 bg-zinc-950/50 rounded-2xl border border-sys-border text-xs text-zinc-400 space-y-1.5 font-mono">
               <p>OS Version: ChirayuOS v14.0.0</p>
-              <p>Framework: Next.js 14 + React 18</p>
-              <p>State: Zustand (persisted localStorage)</p>
+              <p>Framework: Next.js 14 App Router</p>
               <p>Active Theme: {theme}</p>
-              <p>Sound State: {soundMuted ? "Muted" : `${soundVolume}%`}</p>
-              <p>Achievements Unlocked: {achievements.length}</p>
+              <p>Achievements: {achievements.length} unlocked</p>
             </div>
           </div>
         )}
 
         {activeTab === "achievements" && (
-          <div className="space-y-6">
-            <div className="space-y-1.5 border-b border-sys-border pb-4">
-              <h3 className="text-sm font-bold text-zinc-100">Achievements Unlocked</h3>
-              <p className="text-xs text-sys-text-secondary">Discover hidden achievements by exploring the portfolio. {achievements.length} unlocked so far.</p>
+          <div className="space-y-5">
+            <div className="space-y-1 border-b border-sys-border pb-3">
+              <h3 className="text-sm font-bold text-zinc-100">Achievements Unlocked ({achievements.length})</h3>
+              <p className="text-xs text-sys-text-secondary">Badges earned by exploring the interactive portfolio system.</p>
             </div>
 
             {achievements.length > 0 ? (
-              <div className="grid grid-cols-1 gap-3 min-[380px]:grid-cols-2">
+              <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
                 {achievements.map((a) => (
-                  <div key={a} className="p-3 rounded-xl bg-amber-950/20 border border-amber-500/20 flex items-center gap-3">
-                    <Trophy size={16} className="text-amber-400 shrink-0" />
-                    <span className="text-xs font-semibold text-amber-200">{a}</span>
+                  <div key={a} className="p-3.5 rounded-2xl bg-amber-950/20 border border-amber-500/30 flex items-center gap-3">
+                    <Trophy size={18} className="text-amber-400 shrink-0" />
+                    <span className="text-xs font-bold text-amber-200">{a}</span>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-10 text-xs text-zinc-500">
-                <Trophy size={30} className="mx-auto text-zinc-700 mb-3" />
+              <div className="text-center py-10 text-xs text-zinc-500 space-y-2">
+                <Trophy size={32} className="mx-auto text-zinc-700 mb-2" />
                 <p>No achievements unlocked yet.</p>
-                <p className="mt-1">Try running <code className="text-sys-accent">sudo hire chirayu</code> in the terminal!</p>
+                <p className="text-sys-accent">Try running <code>sudo hire chirayu</code> in the terminal!</p>
               </div>
             )}
           </div>

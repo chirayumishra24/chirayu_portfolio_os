@@ -44,12 +44,10 @@ export default function SpotifyApp() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | null>(null);
   
-  // Audio API Context
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const sourceRef = useRef<MediaElementAudioSourceNode | null>(null);
 
-  // Custom Spotify URL state
   const [playlistUrl, setPlaylistUrl] = useState(() => {
     if (typeof window !== "undefined") {
       return localStorage.getItem("chirayu-os-spotify-url") || "";
@@ -60,7 +58,6 @@ export default function SpotifyApp() {
   const [inputUrl, setInputUrl] = useState(playlistUrl);
   const [showConfig, setShowConfig] = useState(false);
 
-  // Sync Play/Pause for local audio (only when NOT using active Spotify connection)
   useEffect(() => {
     if (!audioRef.current || spotifyConnected) return;
     if (isPlaying) {
@@ -70,7 +67,6 @@ export default function SpotifyApp() {
     }
   }, [isPlaying, currentTrackIndex, activePlaylist, spotifyConnected, setIsPlaying]);
 
-  // Push notification on track change
   useEffect(() => {
     if (isPlaying && !spotifyConnected && currentTrack) {
       pushNotification({
@@ -81,7 +77,6 @@ export default function SpotifyApp() {
     }
   }, [currentTrack, currentTrackIndex, activePlaylist, isPlaying, spotifyConnected, pushNotification]);
 
-  // Audio Visualizer Setup (only when NOT using active Spotify connection)
   useEffect(() => {
     if (!audioRef.current || !canvasRef.current || spotifyConnected) return;
 
@@ -206,12 +201,12 @@ export default function SpotifyApp() {
     playSound("success");
     setSpotifyConnected(true);
     setShowConfig(false);
-    setIsPlaying(false); // Stop local audio
+    setIsPlaying(false);
     unlockAchievement("Spotify Connected");
     pushNotification({
       type: "success",
       title: "Spotify Connected",
-      message: "Your Spotify player stream has been connected successfully."
+      message: "Your Spotify player stream has been connected."
     });
   };
 
@@ -234,14 +229,13 @@ export default function SpotifyApp() {
     } catch (e) {
       console.error(e);
     }
-    // Fallback default lofi playlist
     return "https://open.spotify.com/embed/playlist/37i9dQZF1DWWQRwui0ExPn?utm_source=generator&theme=0";
   };
 
   return (
     <div className="flex h-full w-full flex-col justify-between overflow-y-auto bg-zinc-950/70 p-4 font-sans text-zinc-300 select-none scrollbar-none sm:p-5">
       
-      {/* Local player audio source */}
+      {/* Audio Element */}
       {!spotifyConnected && (
         <audio
           ref={audioRef}
@@ -252,22 +246,22 @@ export default function SpotifyApp() {
       )}
 
       {/* Header bar */}
-      <div className="mb-3 flex w-full shrink-0 flex-col gap-3 border-b border-sys-border pb-3 text-xs sm:flex-row sm:items-center sm:justify-between">
+      <div className="mb-3 flex w-full shrink-0 flex-row items-center justify-between border-b border-sys-border pb-3 text-xs">
         <span className="flex items-center gap-1.5 font-bold uppercase tracking-wider text-sys-accent">
-          <Disc size={15} className="animate-spin-slow" /> Media Room
+          <Disc size={15} className="animate-spin" /> Media Player
         </span>
         
         {spotifyConnected ? (
           <div className="flex items-center gap-1.5">
             <button
               onClick={handleConnectSpotify}
-              className="touch-target rounded border border-zinc-700 bg-zinc-900 px-2 py-0.5 text-[9px] font-bold text-zinc-400 hover:border-sys-accent sm:min-h-0 sm:min-w-0"
+              className="touch-target rounded-lg border border-zinc-700 bg-zinc-900 px-2.5 py-1 text-[10px] font-bold text-zinc-300 hover:border-sys-accent active:scale-95"
             >
-              Config Link
+              Config
             </button>
             <button
               onClick={handleDisconnectSpotify}
-              className="touch-target rounded border border-emerald-500 bg-emerald-950 px-2 py-0.5 text-[9px] font-bold text-emerald-400 sm:min-h-0 sm:min-w-0"
+              className="touch-target rounded-lg border border-emerald-500/50 bg-emerald-950/60 px-2.5 py-1 text-[10px] font-bold text-emerald-400 active:scale-95"
             >
               Connected
             </button>
@@ -275,22 +269,21 @@ export default function SpotifyApp() {
         ) : (
           <button
             onClick={handleConnectSpotify}
-            className="touch-target flex items-center justify-center gap-1 rounded-full border border-zinc-700 bg-zinc-900 px-2.5 py-1 text-[10px] font-bold text-zinc-400 hover:border-sys-accent sm:min-h-0 sm:min-w-0"
+            className="touch-target flex items-center justify-center gap-1.5 rounded-xl border border-zinc-700 bg-zinc-900 px-3 py-1 text-[10.5px] font-bold text-zinc-300 hover:border-sys-accent active:scale-95"
           >
-            <Link size={10} />
+            <Link size={11} />
             <span>Connect Spotify</span>
           </button>
         )}
       </div>
 
-      {/* Main Panel Content */}
+      {/* Main Content Area */}
       {showConfig ? (
-        // Configuration Form for Spotify URL
         <div className="flex-1 flex flex-col justify-center space-y-4 py-2 select-text">
           <div className="space-y-1 text-center">
             <h4 className="text-xs font-bold text-zinc-100 uppercase tracking-wide">Connect Spotify Stream</h4>
-            <p className="text-[10px] text-sys-text-secondary leading-normal">
-              Paste any public Spotify Playlist, Album, or Track link to listen in ChirayuOS:
+            <p className="text-[11px] text-sys-text-secondary leading-normal">
+              Paste any public Spotify Playlist, Album, or Track link:
             </p>
           </div>
 
@@ -300,47 +293,46 @@ export default function SpotifyApp() {
               placeholder="https://open.spotify.com/playlist/..."
               value={inputUrl}
               onChange={(e) => setInputUrl(e.target.value)}
-              className="touch-target w-full rounded-lg border border-sys-border bg-zinc-900 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-600 focus:border-sys-accent focus:outline-none sm:min-h-0"
+              className="touch-target w-full rounded-xl border border-sys-border bg-zinc-900 px-3 py-2 text-xs text-zinc-100 placeholder-zinc-600 focus:border-sys-accent focus:outline-none"
             />
           </div>
 
           {/* Preset options */}
           <div className="space-y-1.5 select-none">
-            <span className="text-[9px] uppercase font-bold text-zinc-500 tracking-wider block">Quick Presets</span>
-            <div className="grid grid-cols-1 gap-1.5 text-[9px] font-semibold min-[380px]:grid-cols-2">
+            <span className="text-[9.5px] uppercase font-bold text-zinc-500 tracking-wider block">Quick Presets</span>
+            <div className="grid grid-cols-2 gap-2 text-[10px] font-semibold">
               <button
                 onClick={() => { setInputUrl("https://open.spotify.com/playlist/37i9dQZF1DWWQRwui0ExPn"); playSound("click"); }}
-                className="touch-target rounded border border-sys-border bg-zinc-900 py-1 text-center text-zinc-300 hover:bg-zinc-800 sm:min-h-0"
+                className="touch-target rounded-xl border border-sys-border bg-zinc-900 py-1.5 text-center text-zinc-300 hover:bg-zinc-850 active:scale-95"
               >
-                ☕ Lofi Beats
+                ☕ Lofi Focus
               </button>
               <button
                 onClick={() => { setInputUrl("https://open.spotify.com/playlist/37i9dQZF1DXdLTE7587tRX"); playSound("click"); }}
-                className="touch-target rounded border border-sys-border bg-zinc-900 py-1 text-center text-zinc-300 hover:bg-zinc-800 sm:min-h-0"
+                className="touch-target rounded-xl border border-sys-border bg-zinc-900 py-1.5 text-center text-zinc-300 hover:bg-zinc-850 active:scale-95"
               >
-                🌌 Synthwave Retro
+                🌌 Synthwave
               </button>
             </div>
           </div>
 
           {/* Action buttons */}
-          <div className="flex flex-col gap-2 pt-2 select-none min-[380px]:flex-row min-[380px]:items-center">
+          <div className="flex gap-2 pt-2 select-none">
             <button
               onClick={() => { playSound("click"); setShowConfig(false); }}
-              className="touch-target flex-1 rounded border border-sys-border bg-zinc-900 py-1.5 text-[10px] font-bold text-zinc-400 hover:bg-zinc-800 sm:min-h-0"
+              className="touch-target flex-1 rounded-xl border border-sys-border bg-zinc-900 py-2 text-[11px] font-bold text-zinc-400 hover:bg-zinc-800 active:scale-95"
             >
               Cancel
             </button>
             <button
               onClick={() => handleSaveSpotifyUrl(inputUrl)}
-              className="touch-target flex-1 rounded bg-sys-accent py-1.5 text-[10px] font-bold text-zinc-950 hover:bg-sys-accent-hover sm:min-h-0"
+              className="touch-target flex-1 rounded-xl bg-sys-accent py-2 text-[11px] font-bold text-zinc-950 hover:bg-sys-accent-hover active:scale-95"
             >
-              Connect Player
+              Save & Connect
             </button>
           </div>
         </div>
       ) : spotifyConnected ? (
-        // Iframe Embed Spotify Player
         <div className="flex min-h-0 flex-1 flex-col justify-center py-2">
           <iframe 
             src={getEmbedUrl(playlistUrl)} 
@@ -350,65 +342,64 @@ export default function SpotifyApp() {
             allowFullScreen 
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
             loading="lazy"
-            className="h-[min(340px,55dvh)] min-h-[260px] rounded-xl border border-sys-border shadow-2xl"
+            className="h-[min(340px,55dvh)] min-h-[260px] rounded-2xl border border-sys-border shadow-2xl"
           />
         </div>
       ) : (
-        // Fallback: Local Audio Player
         <>
-          {/* Album Cover & Track Details */}
+          {/* Cover & Track Details */}
           <div className="my-2 flex min-h-0 flex-1 flex-col items-center justify-center space-y-4">
             <div className={clsx(
-              "w-28 h-28 rounded-2xl flex items-center justify-center shadow-2xl relative border border-sys-border overflow-hidden shrink-0",
+              "w-28 h-28 rounded-3xl flex items-center justify-center shadow-2xl relative border border-sys-border overflow-hidden shrink-0",
               currentTrack.cover
             )}>
               <div className="absolute inset-0 bg-gradient-to-tr from-sys-accent/20 to-transparent animate-pulse" />
               <Radio size={40} className="text-sys-accent animate-bounce" />
             </div>
             
-            <div className="text-center space-y-0.5">
-              <h3 className="font-semibold text-zinc-100 text-xs tracking-wide">{currentTrack.title}</h3>
-              <p className="text-[10px] text-sys-text-secondary">{currentTrack.artist}</p>
+            <div className="text-center space-y-1">
+              <h3 className="font-bold text-zinc-100 text-sm tracking-wide">{currentTrack.title}</h3>
+              <p className="text-[11px] text-sys-text-secondary">{currentTrack.artist}</p>
             </div>
           </div>
 
-          {/* Audio Visualizer Canvas */}
-          <div className="w-full h-8 bg-zinc-950/40 rounded-lg overflow-hidden border border-sys-border mb-3 flex items-center shrink-0">
-            <canvas ref={canvasRef} className="w-full h-full" width={300} height={32} />
+          {/* Visualizer Canvas */}
+          <div className="w-full h-9 bg-zinc-950/50 rounded-xl overflow-hidden border border-sys-border mb-3 flex items-center shrink-0">
+            <canvas ref={canvasRef} className="w-full h-full" width={300} height={36} />
           </div>
 
           {/* Playback Controls */}
           <div className="mb-3 flex shrink-0 items-center justify-center gap-6">
-            <button onClick={handleBack} className="touch-target rounded-full p-2 transition-colors hover:bg-zinc-900 hover:text-sys-accent sm:min-h-0 sm:min-w-0">
-              <SkipBack size={16} />
+            <button onClick={handleBack} className="touch-target rounded-full p-2.5 transition-colors hover:bg-zinc-900 hover:text-sys-accent active:scale-95">
+              <SkipBack size={18} />
             </button>
             <button 
               onClick={handlePlayPause} 
-              className="touch-target flex h-10 w-10 items-center justify-center rounded-full bg-sys-accent text-zinc-950 shadow-lg transition-all hover:scale-105 hover:bg-sys-accent-hover active:scale-95"
+              className="touch-target flex h-12 w-12 items-center justify-center rounded-full bg-sys-accent text-zinc-950 shadow-lg transition-all hover:scale-105 hover:bg-sys-accent-hover active:scale-95"
             >
-              {isPlaying ? <Pause size={16} fill="currentColor" /> : <Play size={16} fill="currentColor" className="ml-0.5" />}
+              {isPlaying ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" className="ml-0.5" />}
             </button>
-            <button onClick={handleNext} className="touch-target rounded-full p-2 transition-colors hover:bg-zinc-900 hover:text-sys-accent sm:min-h-0 sm:min-w-0">
-              <SkipForward size={16} />
+            <button onClick={handleNext} className="touch-target rounded-full p-2.5 transition-colors hover:bg-zinc-900 hover:text-sys-accent active:scale-95">
+              <SkipForward size={18} />
             </button>
           </div>
 
-          {/* Playlists presets */}
-          <div className="grid w-full shrink-0 grid-cols-1 gap-2 border-t border-sys-border pt-3 text-center text-[9px] font-bold uppercase tracking-wider min-[380px]:grid-cols-3">
+          {/* Playlist Presets */}
+          <div className="grid w-full shrink-0 grid-cols-3 gap-2 border-t border-sys-border pt-3 text-center text-[10px] font-bold uppercase tracking-wider">
             <button
               onClick={() => handlePlaylistSelect("lofi")}
               className={clsx(
-                "touch-target rounded py-1 transition-colors sm:min-h-0",
-                activePlaylist === "lofi" ? "bg-sys-accent/15 text-sys-accent border border-sys-accent/20" : "bg-zinc-900/40 hover:bg-zinc-900 text-zinc-400"
+                "touch-target rounded-xl py-1.5 transition-colors active:scale-95",
+                activePlaylist === "lofi" ? "bg-sys-accent/20 text-sys-accent border border-sys-accent/40 font-bold" : "bg-zinc-900/40 hover:bg-zinc-900 text-zinc-400"
               )}
             >
-              Lofi Code
+              Lofi
             </button>
             <button
               onClick={() => handlePlaylistSelect("synthwave")}
               className={clsx(
-                "touch-target rounded py-1 transition-colors sm:min-h-0",
-                activePlaylist === "synthwave" ? "bg-sys-accent/15 text-sys-accent border border-sys-accent/20" : "bg-zinc-900/40 hover:bg-zinc-900 text-zinc-400"
+                "touch-target rounded-xl py-1.5 transition-colors active:scale-95",
+                activePlaylist === "synthwave" ? "bg-sys-accent/20 text-sys-accent border border-sys-accent/40 font-bold" : "bg-zinc-900/40 hover:bg-zinc-900 text-zinc-400"
               )}
             >
               Synthwave
@@ -416,8 +407,8 @@ export default function SpotifyApp() {
             <button
               onClick={() => handlePlaylistSelect("nature")}
               className={clsx(
-                "touch-target rounded py-1 transition-colors sm:min-h-0",
-                activePlaylist === "nature" ? "bg-sys-accent/15 text-sys-accent border border-sys-accent/20" : "bg-zinc-900/40 hover:bg-zinc-900 text-zinc-400"
+                "touch-target rounded-xl py-1.5 transition-colors active:scale-95",
+                activePlaylist === "nature" ? "bg-sys-accent/20 text-sys-accent border border-sys-accent/40 font-bold" : "bg-zinc-900/40 hover:bg-zinc-900 text-zinc-400"
               )}
             >
               Nature
