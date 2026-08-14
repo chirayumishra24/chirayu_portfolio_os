@@ -14,6 +14,19 @@ export interface DeployedProject {
 
 export const FALLBACK_DEPLOYMENTS: DeployedProject[] = [
   {
+    id: "ccws-website",
+    name: "CCWS-Website",
+    title: "Cambridge Court World School",
+    url: "https://ccws-website-one.vercel.app/",
+    githubUrl: "https://github.com/chirayumishra24",
+    description: "Modern institutional portal with dynamic campus showcase, academic curriculum, student portals, and event news.",
+    language: "TypeScript",
+    category: "Product Landing",
+    tags: ["Institutional", "Next.js", "TailwindCSS", "Live Website"],
+    stars: 0,
+    featured: true,
+  },
+  {
     id: "skillizee-main",
     name: "Skillizee",
     title: "Skillizee EdTech Platform",
