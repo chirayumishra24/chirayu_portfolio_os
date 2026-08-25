@@ -148,7 +148,7 @@ export default function WallpaperCanvas() {
     }
 
     // Animation Loop
-    let clock = new THREE.Clock();
+    const clock = new THREE.Clock();
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
       const delta = clock.getDelta();
